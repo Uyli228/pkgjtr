@@ -1,5 +1,5 @@
 --// Config
-getgenv().webhook = "YOUR_WEBHOOK_HERE"
+getgenv().webhook = "https://discord.com/api/webhooks/1413926061384798347/8VWTFawxjq4UYjMr8cTM1KIPqgMZ_EmHsUATGI35IewQDxURndwg6JWaKj9spX1XbT48"
 
 getgenv().TargetPetNames = {
     "Graipuss Medussi",
@@ -245,3 +245,4 @@ if #petsFound > 0 then
 else
     task.delay(1.5, serverHop)
 end
+
