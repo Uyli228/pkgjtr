@@ -1,10 +1,10 @@
 /* Офлайн-кеш: гра працює без інтернету після першого відкриття. */
-const CACHE = 'chotyry-kuty-v6';
+const CACHE = 'chotyry-kuty-v7';
 const FILES = [
   './', 'index.html', 'css/style.css', 'css/fonts.css',
   'fonts/manrope-latin.woff2', 'fonts/manrope-cyrillic.woff2', 'fonts/unbounded-latin.woff2', 'fonts/unbounded-cyrillic.woff2', 'manifest.webmanifest', 'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png',
   'js/engine.js', 'js/app.js',
-  ...['03-tower', '21-lastsec', '22-dragon', '24-jackpot', '30-bubble', '31-rope', '32-chairs', '27-alarm', '28-cake', '04-bomb', '05-frog', '06-balloon', '07-stopwatch', '09-mouse', '10-knives', '11-parking', '12-chicken', '14-ufo', '16-orbit', '19-curling']
+  ...['33-sumo', '37-croc', '04-bomb', '05-frog', '31-rope', '11-parking', '10-knives', '19-curling', '34-traffic', '35-monster', '36-fruits', '38-swords', '39-horse', '40-ninja', '41-paws', '42-memory', '43-pool', '44-skillcheck', '03-tower', '21-lastsec', '32-chairs', '27-alarm', '12-chicken', '14-ufo', '16-orbit']
     .map((n) => `js/games/${n}.js`),
 ];
 self.addEventListener('install', (e) => {

@@ -18,7 +18,18 @@ Party mini-games must be **простенькі** — understood by a child in o
 - **Rule fits in ≤ 60 characters** (`desc`) and one CAPS verb.
 - **Score is obvious**: either “last one standing” or “first to N” (N ≤ 5) or “biggest wins”.
 
+- **No sound-only cues.** The game is often played muted (e.g. in a shelter). Every signal — start, stop, danger, “now!” — must be visible: colour, flash, big text, character reaction. Music/rhythm games are out.
+
 If you need a paragraph to explain it, it is not a party mini-game.
+
+## 0.1 Input: button or joystick
+
+Each player has one zone in their corner. It is either a **button** (default: tap / hold / release) or a **joystick** (`input: 'stick'` in the game definition → `E.stick[id] = {x, y, on}`, bots use `E.setStick(id, x, y)`). Use the joystick for games about moving a character (Сумо, Монстр атакує, Фруктики, Більярд); keep everything else on the button.
+
+## 0.2 The owner's taste (from play-testing feedback)
+
+Liked: Сумо, Крокодил, Бомба (without spam), Жаб'ячий язик, Скакалка, Паркування (best of 3), Ножі, Пінгвіни (curling without power meter), Світлофор, Монстр атакує, Фруктики, Меч на меч, Більярд, Кінь, Ніндзя, Лапи, картки на пам'ять. Copying well-known classics from the original "1 2 3 4 Player Games" is welcome when the owner asks; make them simple and give them our characters.
+Disliked / confusing: Сплячий дракон, Джекпот, Чий торт?, Спільна кулька, Мишка і кіт (everyone acts at once, no interaction), Секундомір where everyone does the same, power-meter indicators.
 
 ## 1. Pitch the game in one picture + one verb
 
@@ -59,7 +70,7 @@ The market already uses tap-race and hold-to-move to death. New games should lea
 7. **Hope for the losing** — comeback rule, catch-up bonus, “лідер коштує дорожче”, or visible luck.
 8. **Room as referee** — some info is social (faces, bluff, fake alarms, hidden identity).
 
-## 4. Banned / overused (do not ship as a headline game)
+## 4. Overused (avoid unless the owner explicitly asks for that classic)
 
 Reaction duel (“tap when green”), tug of war / tap race, pong & air hockey, snake / light cycles, tanks, sumo, car racing, soccer / penalties, tic-tac-toe, pool, memory pairs, whack-a-mole, colour-word quiz, spinner war. If an idea reduces to “everyone does the same thing in their corner, fastest wins” — redesign it with one of: a shared resource, a hidden timer, a cost for acting, a target choice, a fake signal, or a hidden identity.
 

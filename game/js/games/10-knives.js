@@ -5,8 +5,8 @@
     id: 'knives', name: 'Ножі в колоду', icon: '🪵', tag: 'Влучність', bg: '#1E1A2E', btn: 'КИДОК',
     verb: 'КИДАЙ!', desc: 'Тап — ніж у колоду. Влучив у ніж — вибув.',
     create(E) {
-      const FLIGHT = 0.2, SEP = 0.2;
-      const GOAL = E.n >= 3 ? 6 : 8;
+      const FLIGHT = 0.2, SEP = E.n >= 4 ? 0.15 : 0.18;
+      const GOAL = E.n >= 4 ? 4 : E.n === 3 ? 5 : 7;
       let th = 0, w = 1.8, wTarget = 1.8, chT = 2;
       let knives = []; // {a, owner}
       const AUTO = 5;

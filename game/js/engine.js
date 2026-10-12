@@ -348,6 +348,7 @@
     E.onEnd = onEnd;
     E.skill = [0.3, 0.62, 0.92][G.settings.bot] ?? 0.62;
     E.down = [false, false, false, false];
+    E.stick = [0, 1, 2, 3].map(() => ({ x: 0, y: 0, on: false, ox: 0, oy: 0 }));
     E.ready = [false, false, false, false];
     E.out = [false, false, false, false];
     E.timers = [];
@@ -476,7 +477,19 @@
     else E.release(id);
   };
 
-  const pointers = new Map(); // pointerId -> playerId
+  const pointers = new Map(); // pointerId -> { id, ox, oy }
+  E.stick = [0, 1, 2, 3].map(() => ({ x: 0, y: 0, on: false, ox: 0, oy: 0 }));
+  E.stickR = () => Math.min(E.bh * 0.42, 46);
+  // джойстик для ботів (і клавіатури): вектор довжиною ≤ 1
+  E.setStick = function (id, x, y) {
+    const l = Math.hypot(x, y);
+    const k = l > 1 ? 1 / l : 1;
+    const st = E.stick[id];
+    st.x = x * k;
+    st.y = y * k;
+    st.on = l > 0.05;
+  };
+  const isStick = () => E.def && E.def.input === 'stick';
   function playerAt(x, y) {
     for (const p of E.players) {
       const b = p.btn;
@@ -502,14 +515,33 @@
       const p = playerAt(x, y);
       if (!p || p.bot) return;
       try { c.setPointerCapture(e.pointerId); } catch (err) { /* ok */ }
-      pointers.set(e.pointerId, p.id);
+      pointers.set(e.pointerId, { id: p.id, ox: x, oy: y });
+      if (isStick()) {
+        const st = E.stick[p.id];
+        st.ox = x;
+        st.oy = y;
+        st.x = st.y = 0;
+        st.on = true;
+      }
       E.press(p.id);
     });
+    c.addEventListener('pointermove', (e) => {
+      const pt = pointers.get(e.pointerId);
+      if (!pt || !isStick()) return;
+      const [x, y] = pos(e);
+      const R = E.stickR();
+      E.setStick(pt.id, (x - pt.ox) / R, (y - pt.oy) / R);
+      E.stick[pt.id].on = true;
+    });
     const up = (e) => {
-      const id = pointers.get(e.pointerId);
-      if (id === undefined) return;
+      const pt = pointers.get(e.pointerId);
+      if (pt === undefined) return;
+      const id = pt.id;
       pointers.delete(e.pointerId);
-      for (const v of pointers.values()) if (v === id) return;
+      for (const v of pointers.values()) if (v.id === id) return;
+      const st = E.stick[id];
+      st.x = st.y = st.ox = st.oy = 0;
+      st.on = false;
       E.release(id);
     };
     c.addEventListener('pointerup', up);
@@ -519,7 +551,20 @@
 
     // клавіатура для комп'ютера: 1-й A, 2-й L, 3-й Q, 4-й P (або цифри 1–4)
     const KEYS = { KeyA: 0, Digit1: 0, KeyL: 1, Digit2: 1, KeyQ: 2, Digit3: 2, KeyP: 3, Digit4: 3 };
+    const held = new Set();
+    const DIRS = { KeyW: [0, 0, -1], KeyS: [0, 0, 1], KeyD: [0, 1, 0], ArrowUp: [1, 0, -1], ArrowDown: [1, 0, 1], ArrowLeft: [1, -1, 0], ArrowRight: [1, 1, 0] };
+    const keyStick = () => {
+      for (const id of [0, 1]) {
+        let x = 0, y = 0;
+        for (const [k, d] of Object.entries(DIRS)) if (held.has(k) && d[0] === id) { x += d[1]; y += d[2]; }
+        if (id === 0 && held.has('KeyA') && isStick()) x -= 1;
+        const p = E.byId(id);
+        if (p && !p.bot && isStick() && !E.stick[id].ox) E.setStick(id, x, y);
+      }
+    };
     window.addEventListener('keydown', (e) => {
+      held.add(e.code);
+      if (DIRS[e.code] || e.code === 'KeyA') keyStick();
       if (E.phase === 'off' || E.paused || e.repeat) return;
       G.audio.init();
       if (E.phase === 'result' && (e.code === 'Space' || e.code === 'Enter' || KEYS[e.code] !== undefined)) {
@@ -532,6 +577,8 @@
       if (p && !p.bot) E.press(id);
     });
     window.addEventListener('keyup', (e) => {
+      held.delete(e.code);
+      if (DIRS[e.code] || e.code === 'KeyA') keyStick();
       const id = KEYS[e.code];
       if (id === undefined || E.phase === 'off') return;
       const p = E.byId(id);
@@ -1152,6 +1199,11 @@
     g.fillRect(-w / 2, -h / 2 + off, w, (h - depth) * 0.42);
     g.restore();
 
+    if (isStick() && E.phase !== 'intro' && !out && E.phase !== 'result' && E.phase !== 'done') {
+      g.restore();
+      drawStick(g, p);
+      return;
+    }
     let label = (E.def && E.def.btn) || 'ТИСНИ';
     let sub = '';
     if (E.phase === 'intro') {
@@ -1178,6 +1230,32 @@
       g.stroke();
     }
     g.restore();
+  }
+
+  function drawStick(g, p) {
+    const b = p.btn, st = E.stick[p.id], R = E.stickR();
+    const pad = 6;
+    U.rr(g, b.x + pad, b.y + pad, b.w - pad * 2, b.h - pad * 2, 16);
+    g.fillStyle = p.color.d;
+    g.fill();
+    const touched = st.on && st.ox && !p.bot;
+    const cx = touched ? st.ox : b.x + b.w / 2, cy = touched ? st.oy : b.y + b.h / 2;
+    g.beginPath();
+    g.arc(cx, cy, R, 0, TAU);
+    g.fillStyle = 'rgba(0,0,0,0.22)';
+    g.fill();
+    g.lineWidth = 2;
+    g.strokeStyle = U.alpha(p.color.l, 0.6);
+    g.stroke();
+    g.beginPath();
+    g.arc(cx + st.x * R, cy + st.y * R, R * 0.48, 0, TAU);
+    g.fillStyle = p.color.c;
+    g.fill();
+    g.fillStyle = 'rgba(255,255,255,0.3)';
+    g.beginPath();
+    g.arc(cx + st.x * R - R * 0.12, cy + st.y * R - R * 0.12, R * 0.18, 0, TAU);
+    g.fill();
+    if (p.bot) E.txt(g, 'БОТ', b.x + b.w / 2 + (p.rot ? -1 : 1) * (b.w / 2 - 30), b.y + b.h / 2, 11, U.alpha('#1A1233', 0.7), { body: true, weight: 800 });
   }
 
   // для автотестів: прокрутити симуляцію без requestAnimationFrame

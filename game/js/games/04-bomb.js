@@ -3,7 +3,7 @@
   const TAU = U.TAU;
   G.game({
     id: 'bomb', name: 'Бомба', icon: '💣', tag: 'Нерви', bg: '#1B1424', btn: 'ПЕРЕДАЙ',
-    verb: 'ПЕРЕДАЙ!', desc: 'Тисни стільки разів, скільки крапок, — бомба полетить далі.',
+    verb: 'ПЕРЕДАЙ!', desc: 'Тисни стільки разів, скільки крапок. Спам не рахується.',
     create(E) {
       let holder = null, need = 0, fuse = 0, fuseT = 0, flyFrom = null, flyT = 0, beepT = 0, pause = 0, botNext = 0, boomT = 0;
       function pos(p) {
@@ -69,11 +69,18 @@
           botNext -= dt;
           if (botNext <= 0) {
             E.tap(p.id);
-            botNext = U.rand(0.13, 0.24) * U.lerp(1.4, 0.8, E.skill);
+            botNext = U.rand(0.26, 0.4) * U.lerp(1.3, 0.9, E.skill);
           }
         },
         press(p) {
           if (holder !== p.id || flyFrom != null || pause > 0) return;
+          // без спаму: занадто швидкі натискання не рахуються
+          if (E.playT - (this.lastTap || 0) < 0.22) {
+            this.lastTap = E.playT;
+            E.shake(0.8);
+            return;
+          }
+          this.lastTap = E.playT;
           need--;
           G.sfx('tap', 3 - need);
           E.shake(1.5);
