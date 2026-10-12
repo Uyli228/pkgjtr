@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#120E26"/>
+  <path d="M96 236V156a60 60 0 0 1 60-60h80v140z" fill="#35D486"/>
+  <path d="M276 96h80a60 60 0 0 1 60 60v80H276z" fill="#3AA8FF"/>
+  <path d="M96 276h140v140h-80a60 60 0 0 1-60-60z" fill="#FF5468"/>
+  <path d="M276 276h140v80a60 60 0 0 1-60 60h-80z" fill="#FFC530"/>
+  <g font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="112" text-anchor="middle" fill="#120E26">
+    <text x="170" y="206">1</text>
+    <text x="342" y="206">2</text>
+    <text x="170" y="386">3</text>
+    <text x="342" y="386">4</text>
+  </g>
+</svg>
