@@ -563,6 +563,8 @@
     if (E.parts.length > 600) E.parts.splice(0, E.parts.length - 600);
   };
   E.float = function (x, y, text, color = '#fff', rot = 0, size) {
+    const ar = E.arena;
+    x = U.clamp(x, ar.x + 16 * ar.u, ar.x + ar.w - 16 * ar.u);
     E.floats.push({ x, y, text, color, rot, t: 0, life: 1.1, size: size || 5 * E.arena.u });
   };
   E.reduced = (() => {

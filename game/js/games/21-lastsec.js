@@ -3,9 +3,9 @@
   const TAU = U.TAU;
   G.game({
     id: 'lastsec', name: 'Остання секунда', icon: '⏳', tag: 'Нерви', bg: '#1A1433', btn: 'СТОП',
-    verb: 'ТЕРПИ!', desc: 'Один натиск за раунд: пізніше — більше очок, але він скидає таймер усім. Не встиг до нуля — мінус 5. Три раунди.',
+    verb: 'ТЕРПИ!', desc: 'Тисни якомога пізніше, але до нуля. Натиск скидає таймер.',
     create(E) {
-      const ROUNDS = 3, T0 = 5;
+      const ROUNDS = 2, T0 = 5;
       const sc = {}, done = {}, thr = {};
       let round = 0, T = T0, st = 'run', pause = 0, flash = 0, boomT = 0;
       function threshold() {
@@ -111,7 +111,6 @@
             g.stroke();
           }
           E.dual(g, (x, y) => E.txt(g, T.toFixed(1), x, y, 9 * u, col, { weight: 900 }), E.needDual ? 7 * u : 0);
-          E.dual(g, (x, y) => E.txt(g, `РАУНД ${Math.min(round, ROUNDS)}/${ROUNDS}`, x, y, 3.2 * u, 'rgba(246,241,255,0.55)', { body: true, weight: 800 }), 30 * u, true);
           for (const p of E.players) {
             const q = pos(p), d = done[p.id];
             const mood = d == null ? (T < 1.6 && st === 'run' ? 'scared' : 'idle') : d < 0 ? 'hurt' : d >= 7 ? 'happy' : 'sly';

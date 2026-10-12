@@ -2,9 +2,9 @@
   const { U } = G;
   G.game({
     id: 'alarm', name: 'П’ять фруктів', icon: '🔔', tag: 'Уважність', bg: '#173326', btn: 'ДЗВІН',
-    verb: 'РІВНО П’ЯТЬ!', desc: 'Дзвони, коли фруктів одного виду рівно 5. Помилка — очко кожному суперникові.',
+    verb: 'РІВНО П’ЯТЬ!', desc: 'Дзвони, коли однакових фруктів рівно 5.',
     create(E) {
-      const WIN = 5;
+      const WIN = 3;
       const FR = ['🍓', '🍌', '🍋', '🍇'];
       const sc = {}, lock = {}, botAt = {}, fumble = {};
       let piles = [], flipT = 1, speed = 1.2, pause = 0, okSince = -1, ring = 0, ringBy = null;
@@ -89,10 +89,8 @@
             lock[p.id] = 1.2;
             G.sfx('bad');
             E.shake(4);
-            E.float(q.x, q.y, 'ПОМИЛКА!', '#FF5468', p.rot);
-            for (const o of E.players) if (o.id !== p.id) sc[o.id]++;
-            const w = E.players.find((o) => sc[o.id] >= WIN);
-            if (w) E.finish(E.best(sc, 'max'));
+            E.float(q.x, q.y, '−1', '#FF5468', p.rot);
+            sc[p.id] = Math.max(0, sc[p.id] - 1);
           }
         },
         label(p) {

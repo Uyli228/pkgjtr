@@ -3,7 +3,7 @@
   const TAU = U.TAU;
   G.game({
     id: 'ufo', name: 'НЛО-збирачі', icon: '🛸', tag: 'Керування', bg: '#0D0B22', btn: 'ПОВОРОТ',
-    verb: 'ЛОВИ ЗІРКИ', desc: 'Тримай — тарілка повертає. Збирай зірки, тікай від чорних дір. 30 секунд.',
+    verb: 'ЛОВИ ЗІРКИ', desc: 'Тримай — поворот. Збери найбільше зірок.',
     create(E) {
       const TIME = 30;
       const ufos = {}, sc = {};
@@ -12,7 +12,7 @@
         const ar = E.arena, u = ar.u;
         for (let i = 0; i < 20; i++) {
           const x = ar.x + U.rand(0.1, 0.9) * ar.w, y = ar.y + U.rand(0.1, 0.9) * ar.h;
-          if (holes.every((h) => U.dist(x, y, h.x, h.y) > 16 * u)) return { x, y, ph: Math.random() * TAU, big: Math.random() < 0.12 };
+          if (holes.every((h) => U.dist(x, y, h.x, h.y) > 16 * u)) return { x, y, ph: Math.random() * TAU, big: false };
         }
         return { x: ar.cx, y: ar.cy, ph: 0, big: false };
       }
@@ -63,7 +63,7 @@
                 vy += ((h.y - f.y) / d) * 9 * u;
               }
               if (d < 6 * u && f.inv <= 0) {
-                const lost = Math.min(2, sc[p.id]);
+                const lost = 0;
                 sc[p.id] -= lost;
                 for (let i = 0; i < lost; i++) {
                   const s = spawnStar();

@@ -3,9 +3,9 @@
   const TAU = U.TAU;
   G.game({
     id: 'dragon', name: 'Сплячий дракон', icon: '🐉', tag: 'Жадібність', bg: '#1E1424', btn: 'ХАП',
-    verb: 'НЕ БУДИ!', desc: 'Тап — монета зі скарбу. Кожен тап будить дракона: хто хапав в останню секунду, втрачає все.',
+    verb: 'НЕ БУДИ!', desc: 'Тап — монета. Дракон прокинувся — хто хапав, той згорів.',
     create(E) {
-      const ROUNDS = 3;
+      const ROUNDS = 2;
       const bank = {}, haul = {}, lastT = {}, bt = {}, risk = {};
       let round = 0, m = 0, wakeAt = 1, st = 'sleep', pause = 0, fireT = 0, burnt = [];
       function newRound() {
@@ -169,7 +169,6 @@
             E.txt(g, '💰' + haul[p.id], q.x, q.y + (p.rot ? -10 : 10) * u, 3.6 * u, '#FFE7A3', { stroke: '#140D1A' });
             E.hud(g, p, '💰 ' + bank[p.id], { color: p.color.l });
           }
-          E.dual(g, (x, y) => E.txt(g, `РАУНД ${Math.min(round, ROUNDS)}/${ROUNDS}`, x, y, 3.2 * u, 'rgba(246,241,255,0.5)', { body: true, weight: 800 }), 34 * u, true);
         },
       };
     },

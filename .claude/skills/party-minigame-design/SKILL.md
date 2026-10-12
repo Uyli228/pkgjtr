@@ -7,6 +7,19 @@ description: Design or redesign a one-button mini-game for "Чотири Кут�
 
 The fun happens **between the people around the phone**, not on the screen. A mini-game is good when it makes the room shout, accuse, bluff, beg and laugh within the first 5 seconds. Every rule below serves that.
 
+## 0. Simplicity first (hard limits)
+
+Party mini-games must be **простенькі** — understood by a child in one look. A design that breaks any of these is overloaded; cut rules until it fits:
+
+- **One mechanic, at most one twist.** No second action (tap *and* hold for different things), no phases (“first place traps, then run”).
+- **One round**, or at most 2–3 identical short rounds. No lots, no shops, no economy.
+- **≤ 3 kinds of objects** on screen (e.g. player, hazard, goal). No decorative info.
+- **No reading during play.** No numbers like “шанс 65%”, no “РАУНД 2/5” captions; at most a score pill near each player.
+- **Rule fits in ≤ 60 characters** (`desc`) and one CAPS verb.
+- **Score is obvious**: either “last one standing” or “first to N” (N ≤ 5) or “biggest wins”.
+
+If you need a paragraph to explain it, it is not a party mini-game.
+
 ## 1. Pitch the game in one picture + one verb
 
 Before any code, write three lines:
@@ -69,7 +82,7 @@ Bots must lose **believably**: they see only what a human sees (tells, timers), 
 
 - `name`: 1–3 words.
 - `verb`: one CAPS word or short shout shown huge in the intro (“НЕ ПОСПІШАЙ!”).
-- `desc`: **≤ 110 characters**, one or two sentences: what the button does + how you win. Details go in game/README.md, not on screen.
+- `desc`: **≤ 60 characters**, one sentence: what the button does + how you win. Details go in game/README.md, not on screen.
 - `btn`: the verb on the player’s button (≤ 9 chars).
 
 ## 8. Plugging into the engine (game/js/games/NN-id.js)

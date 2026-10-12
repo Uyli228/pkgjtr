@@ -3,7 +3,7 @@
   const TAU = U.TAU;
   G.game({
     id: 'bomb', name: 'Бомба', icon: '💣', tag: 'Нерви', bg: '#1B1424', btn: 'ПЕРЕДАЙ',
-    verb: 'ПЕРЕДАЙ!', desc: 'Натисни стільки разів, скільки крапок на бомбі, — і вона полетить далі. Вибухнула в тебе — вибув.',
+    verb: 'ПЕРЕДАЙ!', desc: 'Тисни стільки разів, скільки крапок, — бомба полетить далі.',
     create(E) {
       let holder = null, need = 0, fuse = 0, fuseT = 0, flyFrom = null, flyT = 0, beepT = 0, pause = 0, botNext = 0, boomT = 0;
       function pos(p) {

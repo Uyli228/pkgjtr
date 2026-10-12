@@ -4,7 +4,7 @@
   G.game({
     id: 'tower', name: 'Спільна вежа', icon: '🏗️', tag: 'Саботаж', bg: '#141029', btn: 'КЛАЦ',
     verb: 'НЕ ЗАВАЛИ!',
-    desc: 'Одна вежа на всіх, ходи по черзі: тап — скинути свій блок. Промахнувся — вибув. Хто чекає, тапами дме вітер!',
+    desc: 'Ходи по черзі: тап — скинути блок. Промах — вибув.',
     create(E) {
       const BH = 0.055; // висота блока (частка висоти арени)
       let blocks = [], debris = [], order = [], turn = 0, slider = null, wait = 0.6, wind = 0, msg = '', msgT = 0;
@@ -57,16 +57,11 @@
             const top = blocks[blocks.length - 1];
             const v = (0.6 + blocks.length * 0.07) * (1 + wind);
             if (Math.abs(slider.x + slider.w / 2 - (top.x + top.w / 2)) < bt[p.id].k * v && Math.random() < 0.3) E.tap(p.id);
-          } else if (Math.random() < 0.04 * (0.5 + E.skill)) E.tap(p.id);
+          }
         },
         press(p) {
           if (!slider || wait > 0) return;
-          if (p.id !== cur()) {
-            // вітер від суперників
-            wind = Math.min(0.9, wind + 0.06);
-            G.sfx('whoosh');
-            return;
-          }
+          if (p.id !== cur()) return;
           const top = blocks[blocks.length - 1];
           let x = slider.x, w = slider.w;
           const lvl = blocks.length;
@@ -98,7 +93,7 @@
         },
         label(p) {
           if (E.out[p.id]) return null;
-          return slider && p.id === cur() ? 'ТВІЙ ХІД!' : 'ВІТЕР';
+          return slider && p.id === cur() ? 'ТВІЙ ХІД!' : 'ЧЕКАЙ';
         },
         draw(g) {
           const ar = E.arena, u = ar.u;
@@ -164,7 +159,6 @@
             const mine = slider && order.length && cur() === p.id;
             E.avatar(g, h.x, h.y, 6.5 * u, p, E.out[p.id] ? 'out' : mine ? 'scared' : 'sly', p.rot);
           }
-          E.dual(g, (x, y) => E.txt(g, String(blocks.length - 1), x, y, 6 * u, 'rgba(246,241,255,0.35)', { weight: 900 }), 36 * u, true);
           if (msgT > 0) E.dual(g, (x, y) => E.txt(g, msg, x, y, 4.6 * u, '#FFE7A3', { stroke: '#141029' }), 26 * u, true);
         },
       };

@@ -3,9 +3,9 @@
   const TAU = U.TAU;
   G.game({
     id: 'frog', name: "Жаб'ячий язик", icon: '🐸', tag: 'Влучність', bg: '#10261E', btn: 'ЯЗИК',
-    verb: 'ЛАП!', desc: 'Тап — язик летить туди, куди дивиться жаба. Муха +1, золота +3, оса −2. До 10.',
+    verb: 'ЛАП!', desc: 'Тап — язик. Злови 5 мух першим.',
     create(E) {
-      const WIN = 10, TIME = 50;
+      const WIN = 5, TIME = 30;
       const F = {}, sc = {};
       let flies = [];
       function frogPos(p) {
@@ -14,7 +14,7 @@
       function spawnFly() {
         const ar = E.arena, u = ar.u;
         const r = Math.random();
-        const type = r < 0.12 ? 'gold' : r < 0.32 ? 'wasp' : 'fly';
+        const type = 'fly';
         const a = Math.random() * TAU;
         return {
           x: ar.cx + U.rand(-0.35, 0.35) * ar.w, y: ar.cy + U.rand(-0.3, 0.3) * ar.h,
@@ -25,7 +25,7 @@
       }
       return {
         init() {
-          const n = E.n + 5;
+          const n = E.n + 3;
           flies = [];
           for (let i = 0; i < n; i++) flies.push(spawnFly());
           for (const p of E.players) {

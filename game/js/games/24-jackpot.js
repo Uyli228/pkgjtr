@@ -2,10 +2,10 @@
   const { U } = G;
   const TAU = U.TAU;
   G.game({
-    id: 'jackpot', name: 'Джекпот привидів', icon: '👻', tag: 'Блеф', bg: '#14122E', btn: 'ТРИМАЙ',
-    verb: 'ВІДПУСТИ ВЧАСНО', desc: 'Тримай — джекпот росте, відпусти — забери. Вибух забирає все. Привиди лякають фальшивими вибухами.',
+    id: 'jackpot', name: 'Джекпот', icon: '💰', tag: 'Блеф', bg: '#14122E', btn: 'ТРИМАЙ',
+    verb: 'ВІДПУСТИ ВЧАСНО', desc: 'Тримай — джекпот росте. Відпусти, поки не вибухнув!',
     create(E) {
-      const ROUNDS = 3;
+      const ROUNDS = 2;
       const sc = {}, got = {}, holding = {}, ghostCd = {}, bt = {}, plan = {};
       let round = 0, st = 'ready', t = 0, J = 0, bustAt = 0, fakeT = 0, boomT = 0, fakeBy = null, busted = false;
       function newRound() {
@@ -84,24 +84,8 @@
           if (st !== 'grow') return;
           if (holding[p.id]) {
             // фальшивий вибух лякає бота з певною ймовірністю
-            if (fakeT > 0.5 && fakeBy !== p.id && Math.random() < (1 - E.skill) * 0.05 + 0.01) E.hold(p.id, false);
-            else if (t >= plan[p.id]) E.hold(p.id, false);
-          } else {
-            bt[p.id] -= dt;
-            if (bt[p.id] <= 0 && ghostCd[p.id] <= 0) {
-              E.tap(p.id);
-              bt[p.id] = U.rand(1.5, 4);
-            }
+            if (t >= plan[p.id]) E.hold(p.id, false);
           }
-        },
-        press(p) {
-          if (st !== 'grow' || holding[p.id] || ghostCd[p.id] > 0) return;
-          // привид лякає: фальшивий вибух
-          ghostCd[p.id] = 2.5;
-          fakeT = 0.9;
-          fakeBy = p.id;
-          G.sfx('boom');
-          E.shake(6);
         },
         release(p) {
           if (st === 'grow') bank(p);
@@ -109,7 +93,7 @@
         label(p) {
           if (st === 'ready') return E.down[p.id] ? 'В ГРІ ✓' : 'ЗАТИСНИ';
           if (holding[p.id]) return 'ТРИМАЮ…';
-          if (st === 'grow') return ghostCd[p.id] > 0 ? '👻 …' : '👻 ЛЯКАЙ';
+          if (st === 'grow') return got[p.id] ? '+' + got[p.id] : '—';
           return got[p.id] ? '+' + got[p.id] : '0';
         },
         draw(g) {
@@ -148,13 +132,11 @@
             col = '#C9C2EA';
           }
           E.dual(g, (x, y) => E.txt(g, txt, x, y, (txt.length > 5 ? 5.5 : 10) * u, col, { weight: 900, stroke: col === '#1A1233' ? null : '#14122E' }), E.needDual && st !== 'grow' ? 7 * u : E.needDual ? 4 * u : 0);
-          E.dual(g, (x, y) => E.txt(g, `РАУНД ${Math.min(round, ROUNDS)}/${ROUNDS}`, x, y, 3.2 * u, 'rgba(246,241,255,0.5)', { body: true, weight: 800 }), 32 * u, true);
           for (const p of E.players) {
             const q = E.home(p, (p.corner ? 12 : 10) * u);
             const ghost = !holding[p.id] && st !== 'ready';
-            g.globalAlpha = ghost ? 0.75 : 1;
-            if (ghost) E.emoji(g, '👻', q.x, q.y + Math.sin(E.t * 3 + p.seat) * u, 9 * u, p.rot);
-            else E.avatar(g, q.x, q.y, 6.5 * u, p, st === 'grow' ? (J > 25 ? 'scared' : 'sly') : st === 'end' && got[p.id] === 0 ? 'hurt' : 'idle', p.rot);
+            g.globalAlpha = ghost ? 0.6 : 1;
+            E.avatar(g, q.x, q.y, 6.5 * u, p, ghost ? (got[p.id] ? 'happy' : 'idle') : st === 'grow' ? (J > 25 ? 'scared' : 'sly') : st === 'end' && got[p.id] === 0 ? 'hurt' : 'idle', p.rot);
             g.globalAlpha = 1;
             E.hud(g, p, String(sc[p.id]), { color: p.color.l, size: 5 * u });
           }

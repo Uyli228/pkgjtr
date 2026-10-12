@@ -3,9 +3,9 @@
   const TAU = U.TAU;
   G.game({
     id: 'cake', name: 'Чий торт?', icon: '🎂', tag: 'Помста', bg: '#2A1C2E', btn: 'ПУСК',
-    verb: 'ЦІЛЬСЯ В ЛІДЕРА', desc: 'Один торт за раунд у того, на кого дивиться катапульта. Лідер +2, сам у себе −1.',
+    verb: 'ЦІЛЬСЯ В ЛІДЕРА', desc: 'Тисни, коли катапульта дивиться на суперника.',
     create(E) {
-      const ROUNDS = 5, WINDOW = 7;
+      const ROUNDS = 3, WINDOW = 7;
       const sc = {}, shot = {}, cream = {}, bt = {};
       let a = 0, w = 2, wT = 0, round = 0, rt = 0, pause = 0, cakes = [];
       const seatA = (p) => Math.atan2(p.ay - E.arena.cy, p.ax - E.arena.cx);
@@ -43,13 +43,8 @@
           return;
         }
         const q = E.byId(c.to), hp = E.home(q, 13 * u);
-        const vals = E.players.map((o) => sc[o.id]);
-        const max = Math.max(...vals), min = Math.min(...vals);
-        let pts;
-        if (q.id === p.id) pts = -1;
-        else if (sc[q.id] === max && max > min) pts = 2;
-        else if (sc[q.id] === min && max > min) pts = 0;
-        else pts = 1;
+        // просто: влучив у когось — +1, сам у себе — −1
+        const pts = q.id === p.id ? -1 : 1;
         sc[p.id] += pts;
         cream[q.id] = 3;
         E.hitstop(0.07);
@@ -102,10 +97,7 @@
           const err = U.gauss() * U.lerp(0.35, 0.08, E.skill);
           const q = targetAt(a + w * 0.15 + err);
           if (!q || q.id === p.id) return;
-          const others = E.players.filter((o) => o.id !== p.id);
-          const max = Math.max(...others.map((o) => sc[o.id]));
-          const hurry = rt > WINDOW - 2;
-          if (sc[q.id] === max || hurry || Math.random() < 0.02) E.tap(p.id);
+          E.tap(p.id);
         },
         press(p) {
           if (shot[p.id] || pause > 0) return;
@@ -171,7 +163,6 @@
             }
             E.hud(g, p, String(sc[p.id]), { color: p.color.l, size: 5 * u });
           }
-          E.dual(g, (x, y) => E.txt(g, `РАУНД ${Math.min(round, ROUNDS)}/${ROUNDS}`, x, y, 3.2 * u, 'rgba(246,241,255,0.55)', { body: true, weight: 800 }), 30 * u, true);
         },
       };
     },

@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Чотири Кути">
-<meta name="description" content="Вечірка на одному телефоні: 21 міні-гра і турніри для 1–4 гравців.">
+<meta name="description" content="Вечірка на одному телефоні: 20 міні-ігор і турніри для 1–4 гравців.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20512%20512%22%3E%20%3Crect%20width%3D%22512%22%20height%3D%22512%22%20rx%3D%22112%22%20fill%3D%22%23120E26%22%2F%3E%20%3Cpath%20d%3D%22M96%20236V156a60%2060%200%200%201%2060-60h80v140z%22%20fill%3D%22%2335D486%22%2F%3E%20%3Cpath%20d%3D%22M276%2096h80a60%2060%200%200%201%2060%2060v80H276z%22%20fill%3D%22%233AA8FF%22%2F%3E%20%3Cpath%20d%3D%22M96%20276h140v140h-80a60%2060%200%200%201-60-60z%22%20fill%3D%22%23FF5468%22%2F%3E%20%3Cpath%20d%3D%22M276%20276h140v80a60%2060%200%200%201-60%2060h-80z%22%20fill%3D%22%23FFC530%22%2F%3E%20%3Cg%20font-family%3D%22Arial%20Black%2C%20Arial%2C%20sans-serif%22%20font-weight%3D%22900%22%20font-size%3D%22112%22%20text-anchor%3D%22middle%22%20fill%3D%22%23120E26%22%3E%20%3Ctext%20x%3D%22170%22%20y%3D%22206%22%3E1%3C%2Ftext%3E%20%3Ctext%20x%3D%22342%22%20y%3D%22206%22%3E2%3C%2Ftext%3E%20%3Ctext%20x%3D%22170%22%20y%3D%22386%22%3E3%3C%2Ftext%3E%20%3Ctext%20x%3D%22342%22%20y%3D%22386%22%3E4%3C%2Ftext%3E%20%3C%2Fg%3E%20%3C%2Fsvg%3E">
 <title>Чотири Кути</title>
 <style>
@@ -394,7 +394,7 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
       <div class="logo-mark" aria-hidden="true"><b>1</b><b>2</b><b>3</b><b>4</b></div>
       <div>
         <h1>Чотири <span>Кути</span></h1>
-        <p class="tagline">21 міні-гра на одному телефоні</p>
+        <p class="tagline">20 міні-ігор на одному телефоні</p>
       </div>
     </header>
 
@@ -415,7 +415,7 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
     </div>
 
     <div class="modes">
-      <button class="mode primary" id="btn-games" type="button"><span>Міні-ігри</span><small>21 гра на вибір</small></button>
+      <button class="mode primary" id="btn-games" type="button"><span>Міні-ігри</span><small>20 ігор на вибір</small></button>
       <button class="mode" id="btn-tourney" type="button"><span>Турнір</span><small>серія ігор до перемоги</small></button>
       <button class="mode" id="btn-random" type="button"><span>Випадкова гра</span><small>одразу в бій</small></button>
     </div>
@@ -1155,6 +1155,8 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
     if (E.parts.length > 600) E.parts.splice(0, E.parts.length - 600);
   };
   E.float = function (x, y, text, color = '#fff', rot = 0, size) {
+    const ar = E.arena;
+    x = U.clamp(x, ar.x + 16 * ar.u, ar.x + ar.w - 16 * ar.u);
     E.floats.push({ x, y, text, color, rot, t: 0, life: 1.1, size: size || 5 * E.arena.u });
   };
   E.reduced = (() => {
@@ -1786,7 +1788,7 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
   G.game({
     id: 'tower', name: 'Спільна вежа', icon: '🏗️', tag: 'Саботаж', bg: '#141029', btn: 'КЛАЦ',
     verb: 'НЕ ЗАВАЛИ!',
-    desc: 'Одна вежа на всіх, ходи по черзі: тап — скинути свій блок. Промахнувся — вибув. Хто чекає, тапами дме вітер!',
+    desc: 'Ходи по черзі: тап — скинути блок. Промах — вибув.',
     create(E) {
       const BH = 0.055; // висота блока (частка висоти арени)
       let blocks = [], debris = [], order = [], turn = 0, slider = null, wait = 0.6, wind = 0, msg = '', msgT = 0;
@@ -1839,16 +1841,11 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
             const top = blocks[blocks.length - 1];
             const v = (0.6 + blocks.length * 0.07) * (1 + wind);
             if (Math.abs(slider.x + slider.w / 2 - (top.x + top.w / 2)) < bt[p.id].k * v && Math.random() < 0.3) E.tap(p.id);
-          } else if (Math.random() < 0.04 * (0.5 + E.skill)) E.tap(p.id);
+          }
         },
         press(p) {
           if (!slider || wait > 0) return;
-          if (p.id !== cur()) {
-            // вітер від суперників
-            wind = Math.min(0.9, wind + 0.06);
-            G.sfx('whoosh');
-            return;
-          }
+          if (p.id !== cur()) return;
           const top = blocks[blocks.length - 1];
           let x = slider.x, w = slider.w;
           const lvl = blocks.length;
@@ -1880,7 +1877,7 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
         },
         label(p) {
           if (E.out[p.id]) return null;
-          return slider && p.id === cur() ? 'ТВІЙ ХІД!' : 'ВІТЕР';
+          return slider && p.id === cur() ? 'ТВІЙ ХІД!' : 'ЧЕКАЙ';
         },
         draw(g) {
           const ar = E.arena, u = ar.u;
@@ -1946,7 +1943,6 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
             const mine = slider && order.length && cur() === p.id;
             E.avatar(g, h.x, h.y, 6.5 * u, p, E.out[p.id] ? 'out' : mine ? 'scared' : 'sly', p.rot);
           }
-          E.dual(g, (x, y) => E.txt(g, String(blocks.length - 1), x, y, 6 * u, 'rgba(246,241,255,0.35)', { weight: 900 }), 36 * u, true);
           if (msgT > 0) E.dual(g, (x, y) => E.txt(g, msg, x, y, 4.6 * u, '#FFE7A3', { stroke: '#141029' }), 26 * u, true);
         },
       };
@@ -1960,9 +1956,9 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
   const TAU = U.TAU;
   G.game({
     id: 'lastsec', name: 'Остання секунда', icon: '⏳', tag: 'Нерви', bg: '#1A1433', btn: 'СТОП',
-    verb: 'ТЕРПИ!', desc: 'Один натиск за раунд: пізніше — більше очок, але він скидає таймер усім. Не встиг до нуля — мінус 5. Три раунди.',
+    verb: 'ТЕРПИ!', desc: 'Тисни якомога пізніше, але до нуля. Натиск скидає таймер.',
     create(E) {
-      const ROUNDS = 3, T0 = 5;
+      const ROUNDS = 2, T0 = 5;
       const sc = {}, done = {}, thr = {};
       let round = 0, T = T0, st = 'run', pause = 0, flash = 0, boomT = 0;
       function threshold() {
@@ -2068,7 +2064,6 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
             g.stroke();
           }
           E.dual(g, (x, y) => E.txt(g, T.toFixed(1), x, y, 9 * u, col, { weight: 900 }), E.needDual ? 7 * u : 0);
-          E.dual(g, (x, y) => E.txt(g, `РАУНД ${Math.min(round, ROUNDS)}/${ROUNDS}`, x, y, 3.2 * u, 'rgba(246,241,255,0.55)', { body: true, weight: 800 }), 30 * u, true);
           for (const p of E.players) {
             const q = pos(p), d = done[p.id];
             const mood = d == null ? (T < 1.6 && st === 'run' ? 'scared' : 'idle') : d < 0 ? 'hurt' : d >= 7 ? 'happy' : 'sly';
@@ -2087,9 +2082,9 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
   const TAU = U.TAU;
   G.game({
     id: 'dragon', name: 'Сплячий дракон', icon: '🐉', tag: 'Жадібність', bg: '#1E1424', btn: 'ХАП',
-    verb: 'НЕ БУДИ!', desc: 'Тап — монета зі скарбу. Кожен тап будить дракона: хто хапав в останню секунду, втрачає все.',
+    verb: 'НЕ БУДИ!', desc: 'Тап — монета. Дракон прокинувся — хто хапав, той згорів.',
     create(E) {
-      const ROUNDS = 3;
+      const ROUNDS = 2;
       const bank = {}, haul = {}, lastT = {}, bt = {}, risk = {};
       let round = 0, m = 0, wakeAt = 1, st = 'sleep', pause = 0, fireT = 0, burnt = [];
       function newRound() {
@@ -2253,7 +2248,6 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
             E.txt(g, '💰' + haul[p.id], q.x, q.y + (p.rot ? -10 : 10) * u, 3.6 * u, '#FFE7A3', { stroke: '#140D1A' });
             E.hud(g, p, '💰 ' + bank[p.id], { color: p.color.l });
           }
-          E.dual(g, (x, y) => E.txt(g, `РАУНД ${Math.min(round, ROUNDS)}/${ROUNDS}`, x, y, 3.2 * u, 'rgba(246,241,255,0.5)', { body: true, weight: 800 }), 34 * u, true);
         },
       };
     },
@@ -2265,146 +2259,10 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
   const { U } = G;
   const TAU = U.TAU;
   G.game({
-    id: 'auction', name: 'Аукціон наосліп', icon: '🎁', tag: 'Блеф', bg: '#1A1F33', btn: 'ТРИМАЙ',
-    verb: 'БЛЕФУЙ!', desc: 'Тримай — ціна росте. Останній, хто тримає, купує коробку: там подарунок або бомба.',
+    id: 'jackpot', name: 'Джекпот', icon: '💰', tag: 'Блеф', bg: '#14122E', btn: 'ТРИМАЙ',
+    verb: 'ВІДПУСТИ ВЧАСНО', desc: 'Тримай — джекпот росте. Відпусти, поки не вибухнув!',
     create(E) {
-      const LOTS = 5, CAP = 12;
-      const sc = {}, inBid = {}, val = {};
-      let lot = 0, st = 'ready', t = 0, price = 0, V = 0, chance = 0, gift = true, winner = null, paid = 0;
-      function newLot() {
-        lot++;
-        st = 'ready';
-        t = 0;
-        price = 0;
-        winner = null;
-        V = U.randi(3, 9);
-        chance = U.pick([0.2, 0.35, 0.5, 0.65, 0.8]);
-        gift = Math.random() < chance;
-        E.players.forEach((p) => {
-          inBid[p.id] = false;
-          // оцінка бота: очікувана цінність + власний характер
-          val[p.id] = V * (2 * chance - 1) + U.gauss() * U.lerp(2.2, 0.8, E.skill) + (Math.random() < 0.2 ? 2 : 0);
-        });
-      }
-      function close(w) {
-        winner = w;
-        st = 'reveal';
-        t = 0;
-        paid = Math.floor(price);
-        if (w != null) {
-          const delta = (gift ? V : -V) - paid;
-          sc[w] += delta;
-          const p = E.byId(w);
-          G.sfx(gift ? 'win' : 'boom');
-          if (!gift) E.shake(8);
-          E.burst(E.arena.cx, E.arena.cy, gift ? [p.color.c, '#FFC530', '#fff'] : ['#FF5468', '#FF9E4A'], 40);
-        } else G.sfx('draw');
-      }
-      return {
-        init() {
-          E.players.forEach((p) => (sc[p.id] = 0));
-          newLot();
-        },
-        update(dt) {
-          t += dt;
-          if (st === 'ready') {
-            if (t >= 2.2) {
-              E.players.forEach((p) => (inBid[p.id] = !!E.down[p.id]));
-              const n = E.players.filter((p) => inBid[p.id]).length;
-              if (n === 0) return close(null);
-              if (n === 1) return close(E.players.find((p) => inBid[p.id]).id);
-              st = 'bid';
-              t = 0;
-              G.sfx('go');
-            }
-          } else if (st === 'bid') {
-            price += dt * (1.3 + t * 0.12);
-            const left = E.players.filter((p) => inBid[p.id]);
-            if (price >= CAP) {
-              price = CAP;
-              return close(null);
-            }
-            if (left.length <= 1) return close(left.length ? left[0].id : null);
-          } else if (st === 'reveal' && t > 2.4) {
-            if (lot >= LOTS) return E.finish(E.best(sc, 'max'), 'Рахунок: ' + Math.max(...E.players.map((p) => sc[p.id])));
-            newLot();
-          }
-        },
-        bot(p) {
-          if (st === 'ready') {
-            const want = val[p.id] > 0.3 || Math.random() < 0.004;
-            if (t > 0.3 && want !== E.down[p.id]) E.hold(p.id, want);
-          } else if (st === 'bid' && inBid[p.id] && price >= val[p.id]) E.hold(p.id, false);
-        },
-        release(p) {
-          if (st === 'bid' && inBid[p.id]) {
-            inBid[p.id] = false;
-            G.sfx('tap', 1);
-          }
-        },
-        label(p) {
-          if (st === 'ready') return E.down[p.id] ? 'В ГРІ ✓' : 'ЗАТИСНИ';
-          if (st === 'bid') return inBid[p.id] ? 'ТРИМАЮ…' : 'ПАС';
-          return winner === p.id ? 'КУПИВ' : 'ПАС';
-        },
-        draw(g) {
-          const ar = E.arena, u = ar.u;
-          // молоток і стіл
-          g.fillStyle = '#232A45';
-          g.beginPath();
-          g.arc(ar.cx, ar.cy, 30 * u, 0, TAU);
-          g.fill();
-          // коробка
-          const s = 12 * u;
-          const shake = st === 'bid' ? Math.sin(E.t * 30) * price * 0.08 * u : 0;
-          const open = st === 'reveal';
-          if (!open || winner == null) {
-            g.fillStyle = '#C9473F';
-            g.fillRect(ar.cx - s + shake, ar.cy - s * 0.7, s * 2, s * 1.6);
-            g.fillStyle = '#E25B52';
-            g.fillRect(ar.cx - s * 1.1 + shake, ar.cy - s * 0.95, s * 2.2, s * 0.45);
-            g.fillStyle = '#FFC530';
-            g.fillRect(ar.cx - s * 0.15 + shake, ar.cy - s * 0.95, s * 0.3, s * 1.85);
-            E.txt(g, '?', ar.cx + shake, ar.cy + s * 0.25, s, '#fff', { stroke: '#7A1E2A' });
-          } else {
-            E.emoji(g, gift ? '🎁' : '💣', ar.cx, ar.cy, s * 2.4);
-          }
-          // інформація про лот
-          const info = open
-            ? winner == null
-              ? 'НІХТО НЕ КУПИВ'
-              : (gift ? `ПОДАРУНОК +${V}` : `БОМБА −${V}`) + `, ціна ${paid}`
-            : `ЦІННІСТЬ ${V} · ШАНС ПОДАРУНКА ${Math.round(chance * 100)}%`;
-          E.dual(g, (x, y) => E.txt(g, info, x, y, Math.min(3.6 * u, 15), open && winner != null ? (gift ? '#35D486' : '#FF5468') : '#F6F1FF', { weight: 800 }), 22 * u, true);
-          const big = st === 'ready' ? 'ЗАТИСНІТЬ!' : st === 'bid' ? 'ЦІНА ' + Math.floor(price) : '';
-          if (big) E.dual(g, (x, y) => E.txt(g, big, x, y, 6 * u, st === 'bid' ? '#FFC530' : '#3AA8FF', { stroke: '#1A1F33' }), 31 * u, true);
-          E.dual(g, (x, y) => E.txt(g, `ЛОТ ${Math.min(lot, LOTS)}/${LOTS}`, x, y, 3.2 * u, 'rgba(246,241,255,0.5)', { body: true, weight: 800 }), 39 * u, true);
-          for (const p of E.players) {
-            const q = E.home(p, (p.corner ? 12 : 10) * u);
-            const active = (st === 'ready' && E.down[p.id]) || (st === 'bid' && inBid[p.id]) || (open && winner === p.id);
-            let mood = active ? (st === 'bid' && price > V * 0.6 ? 'scared' : 'sly') : 'idle';
-            if (open && winner === p.id) mood = gift ? 'happy' : 'hurt';
-            g.globalAlpha = active || st === 'reveal' ? 1 : 0.55;
-            E.avatar(g, q.x, q.y, 6.5 * u, p, mood, p.rot);
-            g.globalAlpha = 1;
-            if (active && st !== 'reveal') E.emoji(g, '✋', q.x + (p.ax < E.arena.cx ? 7 : -7) * u, q.y + (p.rot ? 5 : -5) * u, 5 * u, p.rot);
-            E.hud(g, p, String(sc[p.id]), { color: p.color.l, size: 5 * u });
-          }
-        },
-      };
-    },
-  });
-})();
-</script>
-<script>
-(function () {
-  const { U } = G;
-  const TAU = U.TAU;
-  G.game({
-    id: 'jackpot', name: 'Джекпот привидів', icon: '👻', tag: 'Блеф', bg: '#14122E', btn: 'ТРИМАЙ',
-    verb: 'ВІДПУСТИ ВЧАСНО', desc: 'Тримай — джекпот росте, відпусти — забери. Вибух забирає все. Привиди лякають фальшивими вибухами.',
-    create(E) {
-      const ROUNDS = 3;
+      const ROUNDS = 2;
       const sc = {}, got = {}, holding = {}, ghostCd = {}, bt = {}, plan = {};
       let round = 0, st = 'ready', t = 0, J = 0, bustAt = 0, fakeT = 0, boomT = 0, fakeBy = null, busted = false;
       function newRound() {
@@ -2483,24 +2341,8 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
           if (st !== 'grow') return;
           if (holding[p.id]) {
             // фальшивий вибух лякає бота з певною ймовірністю
-            if (fakeT > 0.5 && fakeBy !== p.id && Math.random() < (1 - E.skill) * 0.05 + 0.01) E.hold(p.id, false);
-            else if (t >= plan[p.id]) E.hold(p.id, false);
-          } else {
-            bt[p.id] -= dt;
-            if (bt[p.id] <= 0 && ghostCd[p.id] <= 0) {
-              E.tap(p.id);
-              bt[p.id] = U.rand(1.5, 4);
-            }
+            if (t >= plan[p.id]) E.hold(p.id, false);
           }
-        },
-        press(p) {
-          if (st !== 'grow' || holding[p.id] || ghostCd[p.id] > 0) return;
-          // привид лякає: фальшивий вибух
-          ghostCd[p.id] = 2.5;
-          fakeT = 0.9;
-          fakeBy = p.id;
-          G.sfx('boom');
-          E.shake(6);
         },
         release(p) {
           if (st === 'grow') bank(p);
@@ -2508,7 +2350,7 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
         label(p) {
           if (st === 'ready') return E.down[p.id] ? 'В ГРІ ✓' : 'ЗАТИСНИ';
           if (holding[p.id]) return 'ТРИМАЮ…';
-          if (st === 'grow') return ghostCd[p.id] > 0 ? '👻 …' : '👻 ЛЯКАЙ';
+          if (st === 'grow') return got[p.id] ? '+' + got[p.id] : '—';
           return got[p.id] ? '+' + got[p.id] : '0';
         },
         draw(g) {
@@ -2547,13 +2389,11 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
             col = '#C9C2EA';
           }
           E.dual(g, (x, y) => E.txt(g, txt, x, y, (txt.length > 5 ? 5.5 : 10) * u, col, { weight: 900, stroke: col === '#1A1233' ? null : '#14122E' }), E.needDual && st !== 'grow' ? 7 * u : E.needDual ? 4 * u : 0);
-          E.dual(g, (x, y) => E.txt(g, `РАУНД ${Math.min(round, ROUNDS)}/${ROUNDS}`, x, y, 3.2 * u, 'rgba(246,241,255,0.5)', { body: true, weight: 800 }), 32 * u, true);
           for (const p of E.players) {
             const q = E.home(p, (p.corner ? 12 : 10) * u);
             const ghost = !holding[p.id] && st !== 'ready';
-            g.globalAlpha = ghost ? 0.75 : 1;
-            if (ghost) E.emoji(g, '👻', q.x, q.y + Math.sin(E.t * 3 + p.seat) * u, 9 * u, p.rot);
-            else E.avatar(g, q.x, q.y, 6.5 * u, p, st === 'grow' ? (J > 25 ? 'scared' : 'sly') : st === 'end' && got[p.id] === 0 ? 'hurt' : 'idle', p.rot);
+            g.globalAlpha = ghost ? 0.6 : 1;
+            E.avatar(g, q.x, q.y, 6.5 * u, p, ghost ? (got[p.id] ? 'happy' : 'idle') : st === 'grow' ? (J > 25 ? 'scared' : 'sly') : st === 'end' && got[p.id] === 0 ? 'hurt' : 'idle', p.rot);
             g.globalAlpha = 1;
             E.hud(g, p, String(sc[p.id]), { color: p.color.l, size: 5 * u });
           }
@@ -2568,125 +2408,102 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
   const { U } = G;
   const TAU = U.TAU;
   G.game({
-    id: 'laser', name: 'Лазерна стеля', icon: '🔴', tag: 'Ризик', bg: '#120E26', btn: 'ВГОРУ', lanes: true,
-    verb: 'БУДЬ НАЙВИЩИМ', desc: 'Тримай — вгору. Очки капають лише найвищому. Торкнувся лазера — мінус половина.',
+    id: 'bubble', name: 'Спільна кулька', icon: '💨', tag: 'Нерви', bg: '#1A1840', btn: 'ДМУХ',
+    verb: 'НЕ ЛУСНИ!',
+    desc: 'Дмухай хоч раз на 3 секунди. Хто лусне кульку — вибув.',
     create(E) {
-      const TIME = 25, R = 0.035;
-      const S = {};
-      const laser = (t) => 0.95 - 0.34 * Math.min(1, t / 21) + 0.035 * Math.sin(t * 1.9);
-      let leader = null;
+      const LIMIT = 3;
+      const left = {}, bt = {};
+      let size = 0.2, pop = 0.8, last = null, popT = 0;
+      function newBalloon() {
+        size = 0.2;
+        pop = U.rand(0.55, 1);
+        last = null;
+        E.alive().forEach((p) => (left[p.id] = LIMIT));
+      }
       return {
         init() {
-          for (const p of E.players) S[p.id] = { y: 0, vy: 0, sc: 0, zap: 0, margin: U.lerp(0.13, 0.035, E.skill) + U.rand(0, 0.04) };
+          E.players.forEach((p) => (bt[p.id] = U.rand(0.4, 1.4)));
+          newBalloon();
         },
         update(dt) {
-          const L = laser(E.playT);
-          for (const p of E.players) {
-            const s = S[p.id];
-            s.zap = Math.max(0, s.zap - dt);
-            const up = E.down[p.id] && s.zap <= 0;
-            s.vy = U.clamp(s.vy + (up ? 2.6 : -2.1) * dt, -1.3, 1.3);
-            s.y += s.vy * dt;
-            if (s.y < 0) {
-              s.y = 0;
-              s.vy = 0;
+          popT = Math.max(0, popT - dt);
+          if (popT > 0) return;
+          for (const p of E.alive()) {
+            left[p.id] -= dt;
+            if (left[p.id] <= 0) {
+              const h = E.home(p, 13 * E.arena.u);
+              E.float(h.x, h.y, 'ЗАСНУВ!', '#FF5468', p.rot);
+              E.eliminate(p.id);
+              if (E.lastStanding()) return;
             }
-            if (s.y + R >= L) {
-              s.sc = Math.floor(s.sc / 2);
-              s.y = 0;
-              s.vy = 0;
-              s.zap = 1.2;
-              G.sfx('hit');
-              E.shake(4);
-              const P = p.panel;
-              E.burst(P.x + P.w / 2, P.y + (p.rot ? 1 - L : L) * P.h * 0.92 + (p.rot ? P.h * 0.04 : 0), [p.color.c, '#FF5468', '#fff'], 18);
-            }
-          }
-          leader = null;
-          let best = 0.02;
-          for (const p of E.players) {
-            const s = S[p.id];
-            if (s.zap > 0) continue;
-            if (s.y > best + 1e-6) {
-              best = s.y;
-              leader = p.id;
-            }
-          }
-          if (leader != null) S[leader].sc += dt * 10;
-          if (E.playT >= TIME) {
-            const v = {};
-            E.players.forEach((p) => (v[p.id] = Math.floor(S[p.id].sc)));
-            E.finish(E.best(v, 'max'), 'Очки: ' + Math.max(...Object.values(v)));
           }
         },
         bot(p) {
-          const s = S[p.id];
-          const target = laser(E.playT + 0.3) - R - s.margin;
-          const want = s.y + s.vy * 0.32 < target;
-          if (want !== E.down[p.id]) E.hold(p.id, want);
+          if (popT > 0) return;
+          const wobble = size > pop - 0.12;
+          // бот дмухає, коли час підтискає, або коли кулька ще маленька
+          if (left[p.id] < bt[p.id] || (!wobble && size < 0.45 && Math.random() < 0.01)) {
+            E.tap(p.id);
+            bt[p.id] = U.rand(0.25, 1.2) * U.lerp(1.2, 0.8, E.skill);
+          }
         },
-        label(p) {
-          return S[p.id].zap > 0 ? 'ЗАП!' : leader === p.id ? '👑 ЛІДЕР' : null;
+        press(p) {
+          if (popT > 0) return;
+          left[p.id] = LIMIT;
+          last = p.id;
+          size += U.rand(0.04, 0.075);
+          G.sfx('pump', size);
+          if (size >= pop) {
+            popT = 1.3;
+            G.sfx('pop');
+            E.shake(8);
+            const ar = E.arena;
+            E.burst(ar.cx, ar.cy, [p.color.c, '#fff'], 40);
+            E.eliminate(p.id);
+            if (E.lastStanding()) return;
+            E.after(1.3, newBalloon);
+          }
         },
         draw(g) {
-          const t = E.phase === 'play' ? E.playT : 0;
-          const L = laser(t);
-          for (const p of E.players) {
-            const s = S[p.id];
-            E.panel(g, p, (w, h) => {
-              const m = Math.min(w, h);
-              const top = h * 0.04, H = h * 0.92; // корисна висота
-              const Y = (v) => top + H * (1 - v);
-              g.fillStyle = '#120E26';
-              g.fillRect(0, 0, w, h);
-              // шкала
-              g.strokeStyle = 'rgba(255,255,255,0.06)';
-              for (let k = 0; k <= 10; k++) {
-                g.beginPath();
-                g.moveTo(0, Y(k / 10));
-                g.lineTo(w, Y(k / 10));
-                g.stroke();
-              }
-              // лазер
-              const ly = Y(L);
-              g.fillStyle = 'rgba(255,84,104,0.18)';
-              g.fillRect(0, 0, w, ly);
-              g.strokeStyle = '#FF5468';
-              g.lineWidth = 3;
-              g.beginPath();
-              for (let x = 0; x <= w; x += 6) g.lineTo(x, ly + Math.sin(x * 0.3 + E.t * 30) * 1.5);
-              g.stroke();
-              // суперники — мітки збоку
-              for (const q of E.players) {
-                if (q.id === p.id) continue;
-                g.fillStyle = q.color.c;
-                g.fillRect(w - 10, Y(S[q.id].y) - 2, 10, 4);
-              }
-              // кулька
-              const cy = Y(s.y) - m * R, cx = w / 2;
-              if (s.zap > 0 && Math.floor(E.t * 12) % 2) g.globalAlpha = 0.4;
-              g.fillStyle = p.color.c;
-              g.beginPath();
-              g.arc(cx, cy, m * R * 1.4, 0, TAU);
-              g.fill();
-              g.fillStyle = 'rgba(255,255,255,0.35)';
-              g.beginPath();
-              g.arc(cx - m * R * 0.4, cy - m * R * 0.4, m * R * 0.45, 0, TAU);
-              g.fill();
-              if (E.down[p.id] && s.zap <= 0) {
-                g.fillStyle = '#FFC530';
-                g.beginPath();
-                g.moveTo(cx - m * R * 0.6, cy + m * R * 1.3);
-                g.lineTo(cx, cy + m * R * (2.4 + Math.random()));
-                g.lineTo(cx + m * R * 0.6, cy + m * R * 1.3);
-                g.fill();
-              }
-              g.globalAlpha = 1;
-              if (leader === p.id) E.emoji(g, '👑', cx, cy - m * R * 3, m * 0.08);
-              E.txt(g, String(Math.floor(s.sc)), 10, h - 14, m * 0.075, '#fff', { align: 'left', weight: 900 });
-            });
+          const ar = E.arena, u = ar.u;
+          if (popT <= 0) {
+            const R = (8 + size * 26) * u;
+            const near = U.clamp((size - (pop - 0.12)) / 0.12, 0, 1);
+            const jx = U.rand(-1, 1) * near * 1.2 * u, jy = U.rand(-1, 1) * near * 1.2 * u;
+            const col = last == null ? { c: '#C9C2EA', d: '#8D86B0' } : G.COLORS[last];
+            g.fillStyle = col.c;
+            g.beginPath();
+            g.ellipse(ar.cx + jx, ar.cy + jy, R * 0.94, R, 0, 0, TAU);
+            g.fill();
+            g.fillStyle = 'rgba(255,255,255,0.35)';
+            g.beginPath();
+            g.ellipse(ar.cx - R * 0.35 + jx, ar.cy - R * 0.4 + jy, R * 0.16, R * 0.28, -0.5, 0, TAU);
+            g.fill();
+            g.fillStyle = col.d;
+            g.beginPath();
+            g.moveTo(ar.cx - R * 0.1, ar.cy + R * 1.02);
+            g.lineTo(ar.cx + R * 0.1, ar.cy + R * 1.02);
+            g.lineTo(ar.cx, ar.cy + R * 0.9);
+            g.fill();
           }
-          if (E.phase === 'play') E.timeBar(g, 1 - E.playT / TIME);
+          for (const p of E.players) {
+            const h = E.home(p, 12 * u);
+            const out = E.out[p.id];
+            const f = out ? 0 : U.clamp(left[p.id] / LIMIT, 0, 1);
+            if (!out) {
+              g.strokeStyle = 'rgba(255,255,255,0.12)';
+              g.lineWidth = 1.4 * u;
+              g.beginPath();
+              g.arc(h.x, h.y, 9 * u, 0, TAU);
+              g.stroke();
+              g.strokeStyle = f < 0.35 ? '#FF5468' : p.color.l;
+              g.beginPath();
+              g.arc(h.x, h.y, 9 * u, -Math.PI / 2, -Math.PI / 2 + TAU * f);
+              g.stroke();
+            }
+            E.avatar(g, h.x, h.y, 6.5 * u, p, out ? 'out' : f < 0.35 ? 'scared' : 'idle', p.rot);
+          }
         },
       };
     },
@@ -2698,187 +2515,223 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
   const { U } = G;
   const TAU = U.TAU;
   G.game({
-    id: 'crowd', name: 'Хто з них ти?', icon: '🕵️', tag: 'Прихована роль', bg: '#1C2A22', btn: 'КРОК',
-    verb: 'НЕ ВИДАЙ СЕБЕ', desc: 'Тап — твоя істота робить крок до фінішу. Затисни й відпусти — постріл у підозрілого.',
+    id: 'rope', name: 'Скакалка', icon: '🪢', tag: 'Ритм', bg: '#1E2A1A', btn: 'СТРИБОК',
+    verb: 'СТРИБАЙ!',
+    desc: 'Тап — стрибок. Перестрибни мотузку. Зачепився — вибув.',
     create(E) {
-      const STEP = 0.0125, FIN = 0.93, TOTAL = 18;
-      let mobs = [];
-      const P = {};
-      let scanT = 0;
-      function order() {
-        return mobs.filter((m) => m.alive).sort((a, b) => b.x - a.x);
-      }
-      function stepMob(m) {
-        m.x += STEP;
-        m.hop = 1;
-        m.steps.push(E.playT);
-      }
-      function suspicion(m) {
-        m.steps = m.steps.filter((t) => E.playT - t < 4);
-        return m.steps.length + m.x * 8;
-      }
+      const AIR = 0.45;
+      const S = {};
+      let a = 0, w = 1.7, surge = 0;
+      const angOf = (p) => {
+        const h = E.home(p, 15 * E.arena.u);
+        return Math.atan2(h.y - E.arena.cy, h.x - E.arena.cx);
+      };
       return {
         init() {
-          const ids = U.shuffle([...Array(TOTAL).keys()]);
-          mobs = [];
-          for (let i = 0; i < TOTAL; i++) mobs.push({ x: 0.07 + Math.random() * 0.03, row: i, owner: -1, alive: true, hop: 0, steps: [], next: U.rand(0.2, 1.2), reveal: 0 });
-          E.players.forEach((p, k) => {
-            mobs[ids[k]].owner = p.id;
-            P[p.id] = { mob: mobs[ids[k]], shots: 2, cd: 0, aiming: false, pressT: 0, scan: 0, bt: U.rand(0.2, 0.5), target: null };
-          });
+          a = Math.random() * TAU;
+          for (const p of E.players) S[p.id] = { air: 0, cd: 0, prev: U.angDiff(a, angOf(p)), plan: U.rand(0.1, 0.25) };
         },
         update(dt) {
-          scanT += dt;
-          for (const m of mobs) {
-            m.hop = Math.max(0, m.hop - dt * 6);
-            m.reveal = Math.max(0, m.reveal - dt);
-            if (m.owner >= 0 || !m.alive) continue;
-            m.next -= dt;
-            if (m.next <= 0) {
-              if (m.x < FIN - 0.02) stepMob(m);
-              // ритм як у людини: серії кроків і паузи
-              m.next = Math.random() < 0.7 ? U.rand(0.15, 0.35) : U.rand(0.6, 1.8);
-            }
-          }
-          for (const p of E.players) {
-            const s = P[p.id];
+          surge -= dt;
+          if (surge <= 0) surge = U.rand(2, 4);
+          const speed = (2.2 + E.playT * 0.32) * (surge < 0.6 ? 1.35 : 1);
+          w = speed;
+          a += w * dt;
+          const dead = [];
+          for (const p of E.alive()) {
+            const s = S[p.id];
+            s.air = Math.max(0, s.air - dt);
             s.cd = Math.max(0, s.cd - dt);
-            if (E.down[p.id] && !s.aiming && s.shots > 0 && s.cd <= 0 && E.playT - s.pressT > 0.25) {
-              s.aiming = true;
-              s.scan = 0;
-              s.scanT = 0;
+            const d = U.angDiff(a, angOf(p));
+            // мотузка проходить через гравця, коли знак різниці кутів змінюється з + на −
+            if (s.prev > 0 && d <= 0 && Math.abs(d) < 1) {
+              if (s.air <= 0) dead.push(p.id);
+              else G.sfx('tap', 2);
             }
-            if (s.aiming) {
-              s.scanT += dt;
-              if (s.scanT > 0.32) {
-                s.scanT = 0;
-                s.scan++;
-              }
-            }
-            if (!E.out[p.id] && s.mob.x >= FIN) return E.finish([p.id]);
+            s.prev = d;
           }
-          if (E.playT > 75) {
-            const d = {};
-            E.alive().forEach((p) => (d[p.id] = P[p.id].mob.x));
-            E.finish(E.best(d, 'max'));
+          for (const id of dead) {
+            const p = E.byId(id), h = E.home(p, 15 * E.arena.u);
+            E.burst(h.x, h.y, p.color.c, 20);
+            E.eliminate(id);
           }
+          if (dead.length) E.lastStanding(dead);
         },
-        aimed(s) {
-          const o = order();
-          return o.length ? o[s.scan % o.length] : null;
-        },
-        bot(p, dt) {
-          const s = P[p.id];
-          if (s.aiming) {
-            const m = this.aimed(s);
-            if (m === s.target || E.playT - s.pressT > 3.5) E.hold(p.id, false);
-            return;
+        bot(p) {
+          const s = S[p.id];
+          if (s.air > 0 || s.cd > 0) return;
+          const d = U.angDiff(a, angOf(p));
+          if (d > 0 && d / w < s.plan + U.gauss() * U.lerp(0.16, 0.06, E.skill)) {
+            E.tap(p.id);
+            s.plan = U.rand(0.08, 0.22);
           }
-          if (E.down[p.id]) return;
-          s.bt -= dt;
-          if (s.bt > 0) return;
-          // ходить «як натовп», лише трохи частіше
-          s.bt = Math.random() < 0.72 ? U.rand(0.14, 0.32) : U.rand(0.5, 1.4);
-          if (s.shots > 0 && s.cd <= 0 && Math.random() < 0.08 + E.skill * 0.1) {
-            const cand = order().filter((m) => m !== s.mob);
-            if (cand.length) {
-              const top = cand.reduce((a, b) => (suspicion(b) > suspicion(a) ? b : a));
-              const avg = cand.reduce((a, b) => a + suspicion(b), 0) / cand.length;
-              if (suspicion(top) > avg + U.lerp(4, 2, E.skill) || top.x > 0.72) {
-                s.target = top;
-                E.hold(p.id, true);
-                return;
-              }
-            }
-          }
-          E.tap(p.id);
         },
         press(p) {
-          P[p.id].pressT = E.playT;
-        },
-        release(p) {
-          const s = P[p.id];
-          if (s.aiming) {
-            s.aiming = false;
-            const m = this.aimed(s);
-            if (!m) return;
-            s.shots--;
-            m.alive = false;
-            G.sfx('pop');
-            E.shake(3);
-            const ar = E.arena;
-            const mx = ar.x + m.x * ar.w, my = ar.y + ((m.row + 0.5) / TOTAL) * ar.h;
-            if (m.owner >= 0) {
-              E.burst(mx, my, G.COLORS[m.owner].c, 30);
-              E.eliminate(m.owner);
-              E.lastStanding();
-            } else {
-              E.burst(mx, my, ['#B9B3D6', '#8D86B0'], 14);
-              s.mob.reveal = 1.6;
-              s.cd = 3;
-              G.sfx('bad');
-            }
-            return;
-          }
-          if (!E.out[p.id] && s.mob.alive) stepMob(s.mob);
-        },
-        label(p) {
-          const s = P[p.id];
-          if (s.aiming) return 'ВІДПУСТИ — ПОСТРІЛ';
-          return null;
+          const s = S[p.id];
+          if (s.air > 0 || s.cd > 0) return;
+          s.air = AIR;
+          s.cd = AIR + 0.12;
+          G.sfx('jump');
         },
         draw(g) {
           const ar = E.arena, u = ar.u;
-          const rh = ar.h / TOTAL;
-          for (let i = 0; i < TOTAL; i++) {
-            g.fillStyle = i % 2 ? '#1F2F26' : '#1C2A22';
-            g.fillRect(ar.x, ar.y + i * rh, ar.w, rh);
-          }
-          // фініш
-          const fx = ar.x + FIN * ar.w;
-          for (let i = 0; i < TOTAL * 2; i++) {
-            g.fillStyle = i % 2 ? '#111' : '#eee';
-            g.fillRect(fx, ar.y + (i * rh) / 2, 1.6 * u, rh / 2);
-          }
-          const r = Math.min(rh * 0.38, 3.6 * u);
-          for (const m of mobs) {
-            const x = ar.x + m.x * ar.w, y = ar.y + (m.row + 0.5) * rh - m.hop * r * 0.8;
-            if (!m.alive) {
-              g.fillStyle = m.owner >= 0 ? U.alpha(G.COLORS[m.owner].c, 0.7) : 'rgba(185,179,214,0.35)';
-              g.beginPath();
-              g.ellipse(x, y + r * 0.5, r * 1.4, r * 0.5, 0, 0, TAU);
-              g.fill();
-              continue;
-            }
-            const outed = m.reveal > 0 && Math.floor(E.t * 8) % 2;
-            g.fillStyle = outed ? G.COLORS[m.owner].c : '#B9B3D6';
-            g.beginPath();
-            g.arc(x, y, r, 0, TAU);
-            g.fill();
-            g.fillStyle = '#1A1233';
-            g.beginPath();
-            g.arc(x + r * 0.35, y - r * 0.2, r * 0.18, 0, TAU);
-            g.arc(x + r * 0.75, y - r * 0.2, r * 0.18, 0, TAU);
-            g.fill();
-          }
-          // прицілювання
+          // земля
+          g.fillStyle = '#243320';
+          g.beginPath();
+          g.arc(ar.cx, ar.cy, Math.hypot(ar.w, ar.h) / 2, 0, TAU);
+          g.fill();
+          g.fillStyle = '#2C3D27';
+          g.beginPath();
+          g.arc(ar.cx, ar.cy, 26 * u, 0, TAU);
+          g.fill();
+          // мотузка — від центру до краю
+          const L = Math.hypot(ar.w, ar.h);
+          g.strokeStyle = '#FFC530';
+          g.lineWidth = 1.6 * u;
+          g.lineCap = 'round';
+          g.beginPath();
+          g.moveTo(ar.cx, ar.cy);
+          g.quadraticCurveTo(
+            ar.cx + Math.cos(a - 0.12) * L * 0.25, ar.cy + Math.sin(a - 0.12) * L * 0.25,
+            ar.cx + Math.cos(a) * L * 0.6, ar.cy + Math.sin(a) * L * 0.6
+          );
+          g.stroke();
+          g.lineCap = 'butt';
+          g.fillStyle = '#8A5A3C';
+          g.beginPath();
+          g.arc(ar.cx, ar.cy, 4 * u, 0, TAU);
+          g.fill();
           for (const p of E.players) {
-            const s = P[p.id];
-            if (!s.aiming) continue;
-            const m = this.aimed(s);
-            if (!m) continue;
-            const x = ar.x + m.x * ar.w, y = ar.y + (m.row + 0.5) * rh;
-            g.strokeStyle = p.color.c;
-            g.lineWidth = 0.6 * u;
+            const s = S[p.id], h = E.home(p, 15 * u);
+            const jump = s.air > 0 ? Math.sin((1 - s.air / AIR) * Math.PI) * 6 * u : 0;
+            g.fillStyle = 'rgba(0,0,0,0.25)';
             g.beginPath();
-            g.arc(x, y, r * 1.9, 0, TAU);
-            g.moveTo(x - r * 2.6, y);
-            g.lineTo(x + r * 2.6, y);
-            g.moveTo(x, y - r * 2.6);
-            g.lineTo(x, y + r * 2.6);
-            g.stroke();
+            g.ellipse(h.x, h.y + 6 * u, 5 * u * (1 - jump / (12 * u)), 1.5 * u, 0, 0, TAU);
+            g.fill();
+            const close = Math.abs(U.angDiff(a, angOf(p))) < 0.6;
+            E.avatar(g, h.x, h.y - jump * (p.rot ? -1 : 1), 6.5 * u, p, E.out[p.id] ? 'out' : s.air > 0 ? 'happy' : close ? 'scared' : 'idle', p.rot);
           }
-          for (const p of E.players) E.hud(g, p, E.out[p.id] ? 'ВИБУВ' : '🎯 ' + P[p.id].shots, { color: p.color.l, size: 3.8 * u });
+        },
+      };
+    },
+  });
+})();
+</script>
+<script>
+(function () {
+  const { U } = G;
+  const TAU = U.TAU;
+  G.game({
+    id: 'chairs', name: 'Стільці', icon: '🪑', tag: 'Реакція', bg: '#2A1C2E', btn: 'СІСТИ',
+    verb: 'СІДАЙ!',
+    desc: 'Музика стихла — тисни, щоб сісти. Без стільця — вибув.',
+    create(E) {
+      let st = 'music', t = 0, stopAt = 3, beat = 0, walk = 0, chairs = [], seated = {}, botAt = {};
+      function round() {
+        st = 'music';
+        t = 0;
+        stopAt = U.rand(2, 5);
+        const n = E.alive().length - 1;
+        chairs = Array.from({ length: n }, (_, i) => ({ a: (i / n) * TAU + Math.PI / 2, who: null }));
+        seated = {};
+      }
+      const pos = (k, off = 0) => {
+        const ar = E.arena, r = 26 * ar.u;
+        const ang = (k / E.n) * TAU + walk + off;
+        return { x: ar.cx + Math.cos(ang) * r, y: ar.cy + Math.sin(ang) * r };
+      };
+      return {
+        init() {
+          round();
+        },
+        update(dt) {
+          t += dt;
+          if (st === 'music') {
+            walk += dt * 1.2;
+            beat -= dt;
+            if (beat <= 0) {
+              G.sfx(Math.random() < 0.5 ? 'note' : 'kick', U.pick([523, 587, 659, 784]));
+              beat = 0.3;
+            }
+            if (t >= stopAt) {
+              st = 'grab';
+              t = 0;
+              G.sfx('alarm');
+              E.flash('#FFFFFF', 0.5);
+              E.players.forEach((p) => (botAt[p.id] = U.lerp(0.75, 0.3, E.skill) + U.rand(0, 0.35)));
+            }
+          } else if (st === 'grab') {
+            const free = chairs.filter((c) => c.who == null);
+            const standing = E.alive().filter((p) => seated[p.id] == null);
+            if (!free.length || t > 4) {
+              for (const p of standing) {
+                E.eliminate(p.id);
+                E.shake(6);
+              }
+              st = 'end';
+              t = 0;
+              if (E.lastStanding()) return;
+            }
+          } else if (st === 'end' && t > 1.4) round();
+        },
+        bot(p) {
+          if (st === 'grab' && seated[p.id] == null && t >= botAt[p.id]) E.tap(p.id);
+        },
+        press(p) {
+          if (st !== 'grab' || seated[p.id] != null) return;
+          const free = chairs.filter((c) => c.who == null);
+          if (!free.length) return;
+          // найближчий вільний стілець
+          const me = pos(E.alive().indexOf(p));
+          const ar = E.arena;
+          free.sort((a, b) => {
+            const pa = { x: ar.cx + Math.cos(a.a) * 14 * ar.u, y: ar.cy + Math.sin(a.a) * 14 * ar.u };
+            const pb = { x: ar.cx + Math.cos(b.a) * 14 * ar.u, y: ar.cy + Math.sin(b.a) * 14 * ar.u };
+            return U.dist(me.x, me.y, pa.x, pa.y) - U.dist(me.x, me.y, pb.x, pb.y);
+          });
+          free[0].who = p.id;
+          seated[p.id] = free[0];
+          G.sfx('thud');
+          E.hitstop(0.05);
+        },
+        label(p) {
+          if (st === 'music') return 'ЧЕКАЙ…';
+          return seated[p.id] ? 'СИДЖУ ✓' : null;
+        },
+        draw(g) {
+          const ar = E.arena, u = ar.u;
+          g.fillStyle = '#33223A';
+          g.beginPath();
+          g.arc(ar.cx, ar.cy, 34 * u, 0, TAU);
+          g.fill();
+          for (const c of chairs) {
+            const x = ar.cx + Math.cos(c.a) * 14 * u, y = ar.cy + Math.sin(c.a) * 14 * u;
+            g.fillStyle = '#A8763E';
+            U.rr(g, x - 4.5 * u, y - 4.5 * u, 9 * u, 9 * u, 1.5 * u);
+            g.fill();
+            g.fillStyle = '#6E4A22';
+            g.fillRect(x - 4.5 * u, y - 4.5 * u, 9 * u, 2 * u);
+          }
+          const al = E.alive();
+          al.forEach((p, k) => {
+            let x, y;
+            if (seated[p.id]) {
+              const c = seated[p.id];
+              x = ar.cx + Math.cos(c.a) * 14 * u;
+              y = ar.cy + Math.sin(c.a) * 14 * u;
+            } else ({ x, y } = pos(k));
+            const mood = st === 'music' ? 'happy' : seated[p.id] ? 'sly' : st === 'end' ? 'hurt' : 'scared';
+            E.avatar(g, x, y, 6 * u, p, mood);
+          });
+          for (const p of E.players) if (E.out[p.id]) E.avatar(g, E.home(p, 12 * u).x, E.home(p, 12 * u).y, 5.5 * u, p, 'out', p.rot);
+          if (st === 'music') {
+            const k = (E.t * 3.3) % 1;
+            g.globalAlpha = 1 - k;
+            E.emoji(g, '🎵', ar.cx + Math.sin(E.t * 2) * 10 * u, ar.cy - k * 12 * u, 7 * u);
+            g.globalAlpha = 1;
+          } else if (st === 'grab') {
+            E.dual(g, (x, y) => E.txt(g, 'СІДАЙ!', x, y, 9 * u, '#FFC530', { stroke: '#2A1C2E' }), 40 * u, true);
+          }
         },
       };
     },
@@ -2890,9 +2743,9 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
   const { U } = G;
   G.game({
     id: 'alarm', name: 'П’ять фруктів', icon: '🔔', tag: 'Уважність', bg: '#173326', btn: 'ДЗВІН',
-    verb: 'РІВНО П’ЯТЬ!', desc: 'Дзвони, коли фруктів одного виду рівно 5. Помилка — очко кожному суперникові.',
+    verb: 'РІВНО П’ЯТЬ!', desc: 'Дзвони, коли однакових фруктів рівно 5.',
     create(E) {
-      const WIN = 5;
+      const WIN = 3;
       const FR = ['🍓', '🍌', '🍋', '🍇'];
       const sc = {}, lock = {}, botAt = {}, fumble = {};
       let piles = [], flipT = 1, speed = 1.2, pause = 0, okSince = -1, ring = 0, ringBy = null;
@@ -2977,10 +2830,8 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
             lock[p.id] = 1.2;
             G.sfx('bad');
             E.shake(4);
-            E.float(q.x, q.y, 'ПОМИЛКА!', '#FF5468', p.rot);
-            for (const o of E.players) if (o.id !== p.id) sc[o.id]++;
-            const w = E.players.find((o) => sc[o.id] >= WIN);
-            if (w) E.finish(E.best(sc, 'max'));
+            E.float(q.x, q.y, '−1', '#FF5468', p.rot);
+            sc[p.id] = Math.max(0, sc[p.id] - 1);
           }
         },
         label(p) {
@@ -3043,9 +2894,9 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
   const TAU = U.TAU;
   G.game({
     id: 'cake', name: 'Чий торт?', icon: '🎂', tag: 'Помста', bg: '#2A1C2E', btn: 'ПУСК',
-    verb: 'ЦІЛЬСЯ В ЛІДЕРА', desc: 'Один торт за раунд у того, на кого дивиться катапульта. Лідер +2, сам у себе −1.',
+    verb: 'ЦІЛЬСЯ В ЛІДЕРА', desc: 'Тисни, коли катапульта дивиться на суперника.',
     create(E) {
-      const ROUNDS = 5, WINDOW = 7;
+      const ROUNDS = 3, WINDOW = 7;
       const sc = {}, shot = {}, cream = {}, bt = {};
       let a = 0, w = 2, wT = 0, round = 0, rt = 0, pause = 0, cakes = [];
       const seatA = (p) => Math.atan2(p.ay - E.arena.cy, p.ax - E.arena.cx);
@@ -3083,13 +2934,8 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
           return;
         }
         const q = E.byId(c.to), hp = E.home(q, 13 * u);
-        const vals = E.players.map((o) => sc[o.id]);
-        const max = Math.max(...vals), min = Math.min(...vals);
-        let pts;
-        if (q.id === p.id) pts = -1;
-        else if (sc[q.id] === max && max > min) pts = 2;
-        else if (sc[q.id] === min && max > min) pts = 0;
-        else pts = 1;
+        // просто: влучив у когось — +1, сам у себе — −1
+        const pts = q.id === p.id ? -1 : 1;
         sc[p.id] += pts;
         cream[q.id] = 3;
         E.hitstop(0.07);
@@ -3142,10 +2988,7 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
           const err = U.gauss() * U.lerp(0.35, 0.08, E.skill);
           const q = targetAt(a + w * 0.15 + err);
           if (!q || q.id === p.id) return;
-          const others = E.players.filter((o) => o.id !== p.id);
-          const max = Math.max(...others.map((o) => sc[o.id]));
-          const hurry = rt > WINDOW - 2;
-          if (sc[q.id] === max || hurry || Math.random() < 0.02) E.tap(p.id);
+          E.tap(p.id);
         },
         press(p) {
           if (shot[p.id] || pause > 0) return;
@@ -3211,187 +3054,6 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
             }
             E.hud(g, p, String(sc[p.id]), { color: p.color.l, size: 5 * u });
           }
-          E.dual(g, (x, y) => E.txt(g, `РАУНД ${Math.min(round, ROUNDS)}/${ROUNDS}`, x, y, 3.2 * u, 'rgba(246,241,255,0.55)', { body: true, weight: 800 }), 30 * u, true);
-        },
-      };
-    },
-  });
-})();
-</script>
-<script>
-(function () {
-  const { U } = G;
-  const TAU = U.TAU;
-  G.game({
-    id: 'trap', name: 'Пастка для друга', icon: '🪤', tag: 'Підстава', bg: '#1B2433', btn: 'ПАСТКА',
-    verb: 'ПІДСТАВ ДРУГА',
-    desc: 'Спершу тап — поставити пастку. Потім тап — стрибок. Очко, лише якщо хтось інший упав. Твоя пастка спіймала — ще +1.',
-    create(E) {
-      const ROUNDS = 3, X0 = 0.08, X1 = 0.92, TW = 0.035, AIR = 0.42, SPD = 0.24;
-      const sc = {}, R = {};
-      let round = 0, st = 'place', t = 0, cursor = 0.3, cdir = 1, traps = [], note = '';
-      function newRound() {
-        round++;
-        st = 'place';
-        t = 0;
-        traps = [];
-        note = '';
-        E.players.forEach((p) => (R[p.id] = { placed: false, x: X0, air: 0, fell: false, botAt: U.rand(0.6, 3.2), plan: {} }));
-      }
-      function lanesY(i) {
-        const ar = E.arena, n = E.n;
-        const top = ar.y + ar.h * 0.25, h = ar.h * 0.5;
-        return top + (h * (i + 0.5)) / n;
-      }
-      return {
-        init() {
-          E.players.forEach((p) => (sc[p.id] = 0));
-          newRound();
-        },
-        update(dt) {
-          t += dt;
-          if (st === 'place') {
-            cursor += cdir * 0.62 * dt;
-            if (cursor > 0.86) { cursor = 0.86; cdir = -1; }
-            if (cursor < 0.2) { cursor = 0.2; cdir = 1; }
-            if (t > 4 || E.players.every((p) => R[p.id].placed)) {
-              st = 'run';
-              t = 0;
-              G.sfx('go');
-            }
-          } else if (st === 'run') {
-            let anyRunning = false;
-            for (const p of E.players) {
-              const r = R[p.id];
-              if (r.fell || r.x >= X1) continue;
-              anyRunning = true;
-              r.x += SPD * dt;
-              r.air = Math.max(0, r.air - dt);
-              if (r.air > 0) continue;
-              for (const tr of traps) {
-                if (Math.abs(r.x - tr.x) < TW * 0.8) {
-                  r.fell = true;
-                  G.sfx('hit');
-                  E.shake(5);
-                  E.flash('#FF5468', 0.5);
-                  const ar = E.arena;
-                  E.burst(ar.x + r.x * ar.w, lanesY(p.seat), p.color.c, 16);
-                  if (tr.owner !== p.id) {
-                    sc[tr.owner]++;
-                    E.float(ar.x + tr.x * ar.w, lanesY(p.seat) - 6 * ar.u, '+1 ' + G.COLORS[tr.owner].name, G.COLORS[tr.owner].l);
-                  }
-                  break;
-                }
-              }
-            }
-            if (!anyRunning) {
-              const fell = E.players.filter((p) => R[p.id].fell);
-              if (fell.length && fell.length < E.n) {
-                E.players.forEach((p) => { if (!R[p.id].fell) sc[p.id]++; });
-                note = 'Ті, хто дійшов, +1';
-                G.sfx('point');
-              } else note = fell.length ? 'Упали всі — очок немає' : 'Дійшли всі — очок немає!';
-              st = 'end';
-              t = 0;
-            }
-          } else if (st === 'end' && t > 1.8) {
-            if (round >= ROUNDS) return E.finish(E.best(sc, 'max'), 'Рахунок: ' + Math.max(...E.players.map((p) => sc[p.id])));
-            newRound();
-          }
-        },
-        bot(p) {
-          const r = R[p.id];
-          if (st === 'place' && !r.placed && t >= r.botAt) E.tap(p.id);
-          if (st === 'run' && !r.fell && r.air <= 0) {
-            for (const tr of traps) {
-              const d = tr.x - r.x;
-              if (d <= 0) continue;
-              const key = traps.indexOf(tr);
-              if (r.plan[key] == null) r.plan[key] = U.rand(0.04, 0.09) + U.gauss() * U.lerp(0.05, 0.012, E.skill);
-              if (d / SPD < AIR * 0.5 + r.plan[key] - 0.06) E.tap(p.id);
-              break;
-            }
-          }
-        },
-        press(p) {
-          const r = R[p.id];
-          if (st === 'place' && !r.placed) {
-            r.placed = true;
-            traps.push({ x: cursor, owner: p.id });
-            G.sfx('stick');
-          } else if (st === 'run' && !r.fell && r.air <= 0 && r.x < X1) {
-            r.air = AIR;
-            G.sfx('jump');
-          }
-        },
-        label(p) {
-          const r = R[p.id];
-          if (st === 'place') return r.placed ? 'ГОТОВО ✓' : 'ПАСТКА';
-          if (st === 'run') return r.fell ? 'УПАВ' : 'СТРИБОК';
-          return null;
-        },
-        draw(g) {
-          const ar = E.arena, u = ar.u;
-          const top = ar.y + ar.h * 0.25, h = ar.h * 0.5;
-          g.fillStyle = '#22304A';
-          g.fillRect(ar.x, top, ar.w, h);
-          for (const p of E.players) {
-            const y = lanesY(p.seat);
-            g.strokeStyle = 'rgba(255,255,255,0.08)';
-            g.beginPath();
-            g.moveTo(ar.x, y + 4 * u);
-            g.lineTo(ar.x + ar.w, y + 4 * u);
-            g.stroke();
-          }
-          // фініш
-          for (let i = 0; i < 12; i++) {
-            g.fillStyle = i % 2 ? '#111' : '#eee';
-            g.fillRect(ar.x + X1 * ar.w, top + (i * h) / 12, 1.4 * u, h / 12);
-          }
-          // пастки
-          for (const tr of traps) {
-            const x = ar.x + tr.x * ar.w, c = G.COLORS[tr.owner];
-            g.fillStyle = U.alpha(c.c, 0.2);
-            g.fillRect(x - TW * ar.w * 0.5, top, TW * ar.w, h);
-            for (const p of E.players) {
-              const y = lanesY(p.seat) + 4 * u;
-              g.fillStyle = c.c;
-              g.beginPath();
-              for (let k = 0; k < 3; k++) {
-                const sx = x - TW * ar.w * 0.5 + (k * TW * ar.w) / 3;
-                g.moveTo(sx, y);
-                g.lineTo(sx + (TW * ar.w) / 6, y - 3.5 * u);
-                g.lineTo(sx + (TW * ar.w) / 3, y);
-              }
-              g.fill();
-            }
-          }
-          // курсор розстановки
-          if (st === 'place' && E.phase === 'play') {
-            const x = ar.x + cursor * ar.w;
-            g.strokeStyle = '#FFC530';
-            g.lineWidth = 0.8 * u;
-            g.setLineDash([1.5 * u, 1.5 * u]);
-            g.beginPath();
-            g.moveTo(x, top - 3 * u);
-            g.lineTo(x, top + h + 3 * u);
-            g.stroke();
-            g.setLineDash([]);
-            E.emoji(g, '🪤', x, top - 6 * u, 7 * u);
-          }
-          // бігуни
-          const ar2 = Math.min(5 * u, (h / E.n) * 0.32);
-          for (const p of E.players) {
-            const r = R[p.id];
-            const y = lanesY(p.seat) + 4 * u - ar2;
-            const jump = r.air > 0 ? Math.sin((1 - r.air / AIR) * Math.PI) * ar2 * 2.4 : st === 'run' && !r.fell ? Math.abs(Math.sin(E.t * 14)) * ar2 * 0.25 : 0;
-            const mood = r.fell ? 'hurt' : r.x >= X1 ? 'happy' : st === 'run' ? 'scared' : 'sly';
-            E.avatar(g, ar.x + r.x * ar.w, y - jump + (r.fell ? ar2 * 0.4 : 0), ar2, p, mood);
-          }
-          const msg = st === 'place' ? 'СТАВТЕ ПАСТКИ!' : st === 'run' ? 'БІЖІТЬ!' : note;
-          E.dual(g, (x, y) => E.txt(g, msg, x, y, 4.2 * u, '#F6F1FF', { stroke: '#1B2433' }), ar.h * 0.33, true);
-          E.dual(g, (x, y) => E.txt(g, `РАУНД ${Math.min(round, ROUNDS)}/${ROUNDS}`, x, y, 3 * u, 'rgba(246,241,255,0.5)', { body: true, weight: 800 }), ar.h * 0.39, true);
-          for (const p of E.players) E.hud(g, p, String(sc[p.id]), { color: p.color.l, size: 5 * u });
         },
       };
     },
@@ -3404,7 +3066,7 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
   const TAU = U.TAU;
   G.game({
     id: 'bomb', name: 'Бомба', icon: '💣', tag: 'Нерви', bg: '#1B1424', btn: 'ПЕРЕДАЙ',
-    verb: 'ПЕРЕДАЙ!', desc: 'Натисни стільки разів, скільки крапок на бомбі, — і вона полетить далі. Вибухнула в тебе — вибув.',
+    verb: 'ПЕРЕДАЙ!', desc: 'Тисни стільки разів, скільки крапок, — бомба полетить далі.',
     create(E) {
       let holder = null, need = 0, fuse = 0, fuseT = 0, flyFrom = null, flyT = 0, beepT = 0, pause = 0, botNext = 0, boomT = 0;
       function pos(p) {
@@ -3573,9 +3235,9 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
   const TAU = U.TAU;
   G.game({
     id: 'frog', name: "Жаб'ячий язик", icon: '🐸', tag: 'Влучність', bg: '#10261E', btn: 'ЯЗИК',
-    verb: 'ЛАП!', desc: 'Тап — язик летить туди, куди дивиться жаба. Муха +1, золота +3, оса −2. До 10.',
+    verb: 'ЛАП!', desc: 'Тап — язик. Злови 5 мух першим.',
     create(E) {
-      const WIN = 10, TIME = 50;
+      const WIN = 5, TIME = 30;
       const F = {}, sc = {};
       let flies = [];
       function frogPos(p) {
@@ -3584,7 +3246,7 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
       function spawnFly() {
         const ar = E.arena, u = ar.u;
         const r = Math.random();
-        const type = r < 0.12 ? 'gold' : r < 0.32 ? 'wasp' : 'fly';
+        const type = 'fly';
         const a = Math.random() * TAU;
         return {
           x: ar.cx + U.rand(-0.35, 0.35) * ar.w, y: ar.cy + U.rand(-0.3, 0.3) * ar.h,
@@ -3595,7 +3257,7 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
       }
       return {
         init() {
-          const n = E.n + 5;
+          const n = E.n + 3;
           flies = [];
           for (let i = 0; i < n; i++) flies.push(spawnFly());
           for (const p of E.players) {
@@ -3820,7 +3482,7 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
   const TAU = U.TAU;
   G.game({
     id: 'balloon', name: 'Повітряна кулька', icon: '🎈', tag: 'Ризик', bg: '#1A1840', btn: 'КАЧАЙ', lanes: true,
-    verb: 'НЕ ЛУСНИ', desc: 'Тап — накачати. Найбільша кулька виграє. Тремтить — значить, скоро лусне.',
+    verb: 'НЕ ЛУСНИ', desc: 'Тап — накачати. Найбільша ціла кулька виграє.',
     create(E) {
       const TIME = 12;
       const S = {};
@@ -3956,7 +3618,7 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
   const TAU = U.TAU;
   G.game({
     id: 'stopwatch', name: 'Секундомір', icon: '⏱️', tag: 'Відчуття часу', bg: '#151230', btn: 'ТРИМАЙ', lanes: true,
-    verb: 'РАХУЙ ПОДУМКИ', desc: 'Затисни й відпусти рівно через указану кількість секунд. Таймер ховається через 1,5 с.',
+    verb: 'РАХУЙ ПОДУМКИ', desc: 'Затисни й відпусти рівно через N секунд.',
     create(E) {
       const SHOW = 1.5, LIMIT = 10;
       const T = U.pick([4, 5, 6, 7, 8]);
@@ -4087,7 +3749,7 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
   const TAU = U.TAU;
   G.game({
     id: 'mouse', name: 'Мишка і кіт', icon: '🧀', tag: 'Обережність', bg: '#2A2018', btn: 'КРАДИСЬ',
-    verb: 'ЗАВМРИ!', desc: 'Тримай — мишка крадеться до сиру. Кіт розплющив очі — відпускай, інакше назад на старт.',
+    verb: 'ЗАВМРИ!', desc: 'Тримай — мишка йде до сиру. Кіт дивиться — відпусти!',
     create(E) {
       const pr = {}, ret = {}, bt = {};
       const cat = { st: 'sleep', t: 0, dur: 2.5, grace: 0 };
@@ -4289,7 +3951,7 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
   const TAU = U.TAU;
   G.game({
     id: 'knives', name: 'Ножі в колоду', icon: '🪵', tag: 'Влучність', bg: '#1E1A2E', btn: 'КИДОК',
-    verb: 'КИДАЙ!', desc: 'Тап — ніж у колоду. Влучив в інший ніж — вибув. Перший, хто встромить усі, виграв.',
+    verb: 'КИДАЙ!', desc: 'Тап — ніж у колоду. Влучив у ніж — вибув.',
     create(E) {
       const FLIGHT = 0.2, SEP = 0.2;
       const GOAL = E.n >= 3 ? 6 : 8;
@@ -4463,7 +4125,7 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
   const { U } = G;
   G.game({
     id: 'parking', name: 'Паркування', icon: '🚗', tag: 'Точність', bg: '#1C1B26', btn: 'ГАЗ', lanes: true,
-    verb: 'СТОП У РАМЦІ', desc: 'Тримай — газ, відпусти — котиться. Зупинись точно в рамці. Удар об стіну — програш.',
+    verb: 'СТОП У РАМЦІ', desc: 'Тримай — газ. Зупинись точно в рамці.',
     create(E) {
       const ACC = 0.32, FR = 0.45, VMAX = 0.8, LIMIT = 15;
       const spot = U.rand(0.24, 0.42); // центр паркомісця (частка висоти від верху)
@@ -4594,7 +4256,7 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
   const TAU = U.TAU;
   G.game({
     id: 'chicken', name: 'Курча на рейках', icon: '🐔', tag: 'Сміливість', bg: '#1D2318', btn: 'ТРИМАЙ', lanes: true,
-    verb: 'ЗІСТРИБНИ ОСТАННІМ', desc: 'Тримай — курча на рейках, відпусти — зістрибне. Найпізніший, кого не збило, виграв.',
+    verb: 'ЗІСТРИБНИ ОСТАННІМ', desc: 'Тримай — стоїш на рейках. Зістрибни останнім!',
     create(E) {
       const CY = 0.8; // де стоїть курча (частка висоти)
       const TL = 0.32; // довжина потяга
@@ -4767,7 +4429,7 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
   const TAU = U.TAU;
   G.game({
     id: 'ufo', name: 'НЛО-збирачі', icon: '🛸', tag: 'Керування', bg: '#0D0B22', btn: 'ПОВОРОТ',
-    verb: 'ЛОВИ ЗІРКИ', desc: 'Тримай — тарілка повертає. Збирай зірки, тікай від чорних дір. 30 секунд.',
+    verb: 'ЛОВИ ЗІРКИ', desc: 'Тримай — поворот. Збери найбільше зірок.',
     create(E) {
       const TIME = 30;
       const ufos = {}, sc = {};
@@ -4776,7 +4438,7 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
         const ar = E.arena, u = ar.u;
         for (let i = 0; i < 20; i++) {
           const x = ar.x + U.rand(0.1, 0.9) * ar.w, y = ar.y + U.rand(0.1, 0.9) * ar.h;
-          if (holes.every((h) => U.dist(x, y, h.x, h.y) > 16 * u)) return { x, y, ph: Math.random() * TAU, big: Math.random() < 0.12 };
+          if (holes.every((h) => U.dist(x, y, h.x, h.y) > 16 * u)) return { x, y, ph: Math.random() * TAU, big: false };
         }
         return { x: ar.cx, y: ar.cy, ph: 0, big: false };
       }
@@ -4827,7 +4489,7 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
                 vy += ((h.y - f.y) / d) * 9 * u;
               }
               if (d < 6 * u && f.inv <= 0) {
-                const lost = Math.min(2, sc[p.id]);
+                const lost = 0;
                 sc[p.id] -= lost;
                 for (let i = 0; i < lost; i++) {
                   const s = spawnStar();
@@ -4982,7 +4644,7 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
   const TAU = U.TAU;
   G.game({
     id: 'orbit', name: 'Орбіта', icon: '🪐', tag: 'Виживання', bg: '#0B0A1E', btn: 'ПЕРЕСКОК',
-    verb: 'ПЕРЕСКАКУЙ!', desc: 'Тап — перескочити на іншу орбіту. Уламки спершу блимають. Останній уцілілий виграв.',
+    verb: 'ПЕРЕСКАКУЙ!', desc: 'Тап — на іншу орбіту. Не врізайся в уламки.',
     create(E) {
       const S = {};
       let hz = [], spawnT = 1.2, ang = 0, w = 1.1, bg = [];
@@ -5165,9 +4827,9 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
   const TAU = U.TAU;
   G.game({
     id: 'curling', name: 'Керлінг-бум', icon: '🥌', tag: 'Сила кидка', bg: '#14233A', btn: 'ЗАТИСНИ',
-    verb: 'ВІДПУСТИ ВЧАСНО', desc: 'Затисни — шкала сили гойдається, відпусти — кидок. Найближча до центру шайба виграє.',
+    verb: 'ВІДПУСТИ ВЧАСНО', desc: 'Відпусти в зеленій зоні. Найближча до центру — виграє.',
     create(E) {
-      const ROUNDS = 3, PERIOD = 1.5, WINDOW = 6;
+      const ROUNDS = 2, PERIOD = 1.5, WINDOW = 6;
       const S = {};
       let pucks = [], round = 0, phase = 'aim', phaseT = 0;
       const MU = () => 30 * E.arena.u;
@@ -5411,7 +5073,6 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
             const left = ROUNDS - round + (S[p.id].thrown ? 0 : 1);
             E.hud(g, p, 'ШАЙБ: ' + Math.max(0, left), { color: p.color.l, size: 3.8 * u });
           }
-          E.dual(g, (x, y) => E.txt(g, `КИДОК ${Math.min(round, ROUNDS)}/${ROUNDS}`, x, y, 3.4 * u, 'rgba(255,255,255,0.5)', { body: true, weight: 800 }), 31 * u, true);
         },
       };
     },

@@ -3,9 +3,9 @@
   const TAU = U.TAU;
   G.game({
     id: 'curling', name: 'Керлінг-бум', icon: '🥌', tag: 'Сила кидка', bg: '#14233A', btn: 'ЗАТИСНИ',
-    verb: 'ВІДПУСТИ ВЧАСНО', desc: 'Затисни — шкала сили гойдається, відпусти — кидок. Найближча до центру шайба виграє.',
+    verb: 'ВІДПУСТИ ВЧАСНО', desc: 'Відпусти в зеленій зоні. Найближча до центру — виграє.',
     create(E) {
-      const ROUNDS = 3, PERIOD = 1.5, WINDOW = 6;
+      const ROUNDS = 2, PERIOD = 1.5, WINDOW = 6;
       const S = {};
       let pucks = [], round = 0, phase = 'aim', phaseT = 0;
       const MU = () => 30 * E.arena.u;
@@ -249,7 +249,6 @@
             const left = ROUNDS - round + (S[p.id].thrown ? 0 : 1);
             E.hud(g, p, 'ШАЙБ: ' + Math.max(0, left), { color: p.color.l, size: 3.8 * u });
           }
-          E.dual(g, (x, y) => E.txt(g, `КИДОК ${Math.min(round, ROUNDS)}/${ROUNDS}`, x, y, 3.4 * u, 'rgba(255,255,255,0.5)', { body: true, weight: 800 }), 31 * u, true);
         },
       };
     },

@@ -36,8 +36,9 @@ Read the game file and the screenshot, then score 0/1 for each column:
 | Соціальне | Bluff / hidden info / room-as-referee? |
 | Не кліше | Not on the banned list in party-minigame-design §4? |
 | Сік | ≥ 5 of 8 items from game-feel-juice checklist? |
+| Простота | Passes every hard limit in party-minigame-design §0 (one mechanic, ≤ 3 object kinds, no reading, rule ≤ 60 chars)? **A zero here is blocking — fix before anything else.** |
 
-Total ≥ 7 → keep. 5–6 → fix the zero columns. ≤ 4 → redesign with party-minigame-design §5 or cut.
+Total ≥ 8 of 11 and Простота = 1 → keep. 5–6 → fix the zero columns. ≤ 4 → redesign with party-minigame-design §5 or cut.
 
 ## 3. Report
 
