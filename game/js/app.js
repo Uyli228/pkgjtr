@@ -20,6 +20,11 @@
   if (!Array.isArray(app.slots) || app.slots.length !== 4) app.slots = ['human', 'human', 'off', 'off'];
   if (!Array.isArray(app.pool)) app.pool = G.games.map((d) => d.id);
   app.pool = app.pool.filter((id) => byId(id));
+  // нові ігри після оновлення автоматично потрапляють у турнір
+  const known = G.store.get('known', null);
+  if (Array.isArray(known)) G.games.forEach((d) => { if (!known.includes(d.id) && !app.pool.includes(d.id)) app.pool.push(d.id); });
+  G.store.set('known', G.games.map((d) => d.id));
+  G.store.set('pool', app.pool);
 
   // ---------- статистика ----------
   const blankStats = () => ({ games: 0, tours: 0, wins: [0, 0, 0, 0], twins: [0, 0, 0, 0], byGame: {} });
