@@ -13,7 +13,9 @@ const read = (rel) => readFileSync(join(gameDir, rel), 'utf8');
 const safeScript = (js) => js.replace(/<\/script/gi, '<\\/script');
 
 // стилі
-html = html.replace(/<link rel="stylesheet" href="(css\/[^"]+)">/g, (_, href) => `<style>\n${read(href)}</style>`);
+const fontUri = (rel) => 'data:font/woff2;base64,' + readFileSync(join(gameDir, rel)).toString('base64');
+const inlineCss = (href) => read(href).replace(/url\(\.\.\/(fonts\/[^)]+)\)/g, (_, f) => `url(${fontUri(f)})`);
+html = html.replace(/<link rel="stylesheet" href="(css\/[^"]+)">/g, (_, href) => `<style>\n${inlineCss(href)}</style>`);
 // скрипти
 html = html.replace(/<script src="(js\/[^"]+)"><\/script>/g, (_, src) => `<script>\n${safeScript(read(src))}</script>`);
 // PWA-посилання не працюють в одному файлі — лишаємо лише іконку як data URI
@@ -29,7 +31,7 @@ const i = process.argv.indexOf('--body-only');
 if (i > 0 && process.argv[i + 1]) {
   const title = html.match(/<title>[\s\S]*?<\/title>/)[0];
   const links = (html.match(/<link rel="(?:preconnect|stylesheet)"[^>]*>/g) || []).join('\n');
-  const style = html.match(/<style>[\s\S]*?<\/style>/)[0];
+  const style = (html.match(/<style>[\s\S]*?<\/style>/g) || []).join('\n');
   const body = html.match(/<body>([\s\S]*)<\/body>/)[1];
   const frag = `${title}\n${links}\n${style}\n${body}`;
   writeFileSync(process.argv[i + 1], frag);

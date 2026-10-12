@@ -6,6 +6,9 @@
 
 ## Як запустити на телефоні
 
+- **APK для Android (без інтернету).** Скачайте `dist/chotyry-kuty.apk` на телефон і відкрийте його.
+  Android попросить дозволити встановлення з цього джерела (браузера чи файлового менеджера) — дозвольте.
+  Потрібен Android 7.0 або новіший. Гра повністю всередині APK, інтернет не потрібен.
 - **Один файл.** Скиньте `dist/chotyry-kuty.html` на телефон і відкрийте в браузері (Chrome / Safari).
 - **Як застосунок.** Викладіть теку `game/` на будь-який хостинг з HTTPS (наприклад, GitHub Pages:
   Settings → Pages → Deploy from branch → `main` / root, тоді гра буде за адресою `…/pkgjtr/game/`).
@@ -57,8 +60,15 @@ game/
   js/games/*.js       20 міні-ігор (кожна — окремий файл)
   js/app.js           меню, турнір, налаштування, статистика
   sw.js, manifest.webmanifest, icons/   встановлення й офлайн
+android/              обгортка для Android: маніфест, MainActivity (smali), іконки, підпис
 tools/build.mjs       збирає все в dist/chotyry-kuty.html
+tools/build-apk.sh    збирає dist/chotyry-kuty.apk (потрібні Java, Maven, Python;
+                      aapt2, smali й apksig скачуються з Maven Central)
 ```
 
+Ключ підпису `android/chotyry-kuty.p12` (пароль `chotyrykuty`) лежить у репозиторії навмисно:
+так нові версії APK встановлюються поверх старих без видалення. Для публікації в Google Play
+створіть власний ключ і тримайте його в секреті.
+
 Нова гра — це файл у `js/games/`, що викликає `G.game({ id, name, icon, tag, desc, btn, create(E) { … } })`,
-і рядок `<script>` в `index.html` (та назва файлу в `sw.js`). Після змін: `node tools/build.mjs`.
+і рядок `<script>` в `index.html` (та назва файлу в `sw.js`). Після змін: `node tools/build.mjs` і `./tools/build-apk.sh`.
