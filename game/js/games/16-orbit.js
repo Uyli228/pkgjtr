@@ -3,7 +3,7 @@
   const TAU = U.TAU;
   G.game({
     id: 'orbit', name: 'Орбіта', icon: '🪐', tag: 'Виживання', bg: '#0B0A1E', btn: 'ПЕРЕСКОК',
-    desc: 'Супутники літають навколо планети по двох орбітах. Тисніть, щоб перескочити на іншу. Уламки спершу блимають, а потім стають небезпечними. Останній уцілілий перемагає.',
+    verb: 'ПЕРЕСКАКУЙ!', desc: 'Тап — перескочити на іншу орбіту. Уламки спершу блимають. Останній уцілілий виграв.',
     create(E) {
       const S = {};
       let hz = [], spawnT = 1.2, ang = 0, w = 1.1, bg = [];
@@ -25,12 +25,12 @@
           });
         },
         update(dt) {
-          w = 1.1 + Math.min(1.3, E.playT * 0.028);
+          w = 1.2 + Math.min(1.6, E.playT * 0.05);
           ang += w * dt;
           // небезпеки
           spawnT -= dt;
           if (spawnT <= 0) {
-            spawnT = Math.max(0.45, 1.25 - E.playT * 0.018);
+            spawnT = Math.max(0.35, 1.1 - E.playT * 0.03);
             for (let tries = 0; tries < 8; tries++) {
               const ring = U.randi(0, 1);
               const a = Math.random() * TAU;

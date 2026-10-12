@@ -3,7 +3,7 @@
   const TAU = U.TAU;
   G.game({
     id: 'auction', name: 'Аукціон наосліп', icon: '🎁', tag: 'Блеф', bg: '#1A1F33', btn: 'ТРИМАЙ',
-    desc: 'На кону коробка: усередині подарунок (+очки) або бомба (−очки), видно лише шанс. Затисніть, щоб торгуватися: поки тримаєте, ціна росте. Відпустив — вийшов. Останній, хто тримає, платить ціну й забирає коробку. Дивіться в обличчя суперникам!',
+    verb: 'БЛЕФУЙ!', desc: 'Тримай — ціна росте. Останній, хто тримає, купує коробку: там подарунок або бомба.',
     create(E) {
       const LOTS = 5, CAP = 12;
       const sc = {}, inBid = {}, val = {};
@@ -119,14 +119,12 @@
           for (const p of E.players) {
             const q = E.home(p, (p.corner ? 12 : 10) * u);
             const active = (st === 'ready' && E.down[p.id]) || (st === 'bid' && inBid[p.id]) || (open && winner === p.id);
-            g.beginPath();
-            g.arc(q.x, q.y, 6.5 * u, 0, TAU);
-            g.fillStyle = active ? p.color.c : '#2C2747';
-            g.fill();
-            g.strokeStyle = p.color.c;
-            g.lineWidth = 0.8 * u;
-            g.stroke();
-            E.emoji(g, active ? '✋' : '🤷', q.x, q.y, 7 * u, p.rot);
+            let mood = active ? (st === 'bid' && price > V * 0.6 ? 'scared' : 'sly') : 'idle';
+            if (open && winner === p.id) mood = gift ? 'happy' : 'hurt';
+            g.globalAlpha = active || st === 'reveal' ? 1 : 0.55;
+            E.avatar(g, q.x, q.y, 6.5 * u, p, mood, p.rot);
+            g.globalAlpha = 1;
+            if (active && st !== 'reveal') E.emoji(g, '✋', q.x + (p.ax < E.arena.cx ? 7 : -7) * u, q.y + (p.rot ? 5 : -5) * u, 5 * u, p.rot);
             E.hud(g, p, String(sc[p.id]), { color: p.color.l, size: 5 * u });
           }
         },

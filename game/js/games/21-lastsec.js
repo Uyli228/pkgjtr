@@ -3,9 +3,9 @@
   const TAU = U.TAU;
   G.game({
     id: 'lastsec', name: 'Остання секунда', icon: '⏳', tag: 'Нерви', bg: '#1A1433', btn: 'СТОП',
-    desc: 'Спільний таймер біжить до нуля. У кожного ОДИН натиск за раунд: чим пізніше — тим більше очок. Але твій натиск скидає таймер для всіх! Хто не натиснув до нуля — мінус 5. Чотири раунди.',
+    verb: 'ТЕРПИ!', desc: 'Один натиск за раунд: пізніше — більше очок, але він скидає таймер усім. Не встиг до нуля — мінус 5. Три раунди.',
     create(E) {
-      const ROUNDS = 4, T0 = 5;
+      const ROUNDS = 3, T0 = 5;
       const sc = {}, done = {}, thr = {};
       let round = 0, T = T0, st = 'run', pause = 0, flash = 0, boomT = 0;
       function threshold() {
@@ -51,6 +51,7 @@
             G.sfx('boom');
             E.shake(8);
             boomT = 0.6;
+            E.hitstop(0.1);
             st = 'pause';
             pause = 1.8;
           } else if (E.players.every((p) => done[p.id] != null)) {
@@ -67,7 +68,7 @@
         },
         press(p) {
           if (st !== 'run' || done[p.id] != null) return;
-          const pts = Math.max(0, Math.round((T0 - T) * 2));
+          const pts = Math.max(0, Math.round((T0 - T) * 20) / 10);
           sc[p.id] += pts;
           done[p.id] = pts;
           T = T0;
@@ -113,12 +114,9 @@
           E.dual(g, (x, y) => E.txt(g, `РАУНД ${Math.min(round, ROUNDS)}/${ROUNDS}`, x, y, 3.2 * u, 'rgba(246,241,255,0.55)', { body: true, weight: 800 }), 30 * u, true);
           for (const p of E.players) {
             const q = pos(p), d = done[p.id];
-            g.beginPath();
-            g.arc(q.x, q.y, 7 * u, 0, TAU);
-            g.fillStyle = d == null ? p.color.d : d < 0 ? '#4A4468' : p.color.c;
-            g.fill();
-            E.txt(g, d == null ? '⌛' : d < 0 ? '✖' : '✓', q.x, q.y + 0.3 * u, 6 * u, '#fff');
-            E.hud(g, p, String(sc[p.id]), { color: p.color.l, size: 5 * u });
+            const mood = d == null ? (T < 1.6 && st === 'run' ? 'scared' : 'idle') : d < 0 ? 'hurt' : d >= 7 ? 'happy' : 'sly';
+            E.avatar(g, q.x, q.y, 7 * u, p, mood, p.rot);
+            E.hud(g, p, (Math.round(sc[p.id] * 10) / 10).toString(), { color: p.color.l, size: 5 * u });
           }
         },
       };

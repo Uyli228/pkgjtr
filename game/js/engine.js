@@ -403,7 +403,9 @@
     setPhase('result');
     E.players.forEach((p) => (E.down[p.id] = false));
     pointers.clear();
+    E.hitstop(0.12);
     if (E.winners.length && E.winners.length < E.n) {
+      E.flash('#FFFFFF', 0.6);
       G.sfx('win');
       G.vibe([40, 60, 80]);
       const ar = E.arena;
@@ -431,6 +433,8 @@
     E.down[id] = false;
     G.sfx('out');
     G.vibe(120);
+    E.flash('#FF5468', 0.8);
+    E.hitstop(0.09);
   };
   // якщо лишився один — він перемагає. Повертає true, якщо гру завершено.
   E.lastStanding = function (fallbackIds) {
@@ -547,6 +551,7 @@
   // ---------- частинки й ефекти ----------
   E.burst = function (x, y, color, count = 20, speed = 1) {
     const u = E.arena.u;
+    if (E.reduced) count = Math.ceil(count / 2);
     for (let i = 0; i < count; i++) {
       const a = Math.random() * TAU, s = (20 + Math.random() * 60) * u * speed;
       E.parts.push({
@@ -560,8 +565,132 @@
   E.float = function (x, y, text, color = '#fff', rot = 0, size) {
     E.floats.push({ x, y, text, color, rot, t: 0, life: 1.1, size: size || 5 * E.arena.u });
   };
+  E.reduced = (() => {
+    try {
+      return matchMedia('(prefers-reduced-motion: reduce)').matches;
+    } catch (e) {
+      return false;
+    }
+  })();
   E.shake = function (m) {
-    E.shakeMag = Math.max(E.shakeMag, m);
+    E.shakeMag = Math.max(E.shakeMag, E.reduced ? m * 0.4 : m);
+  };
+  // «стоп-кадр» на важливій події (60–120 мс)
+  E.hitT = 0;
+  E.hitstop = function (sec = 0.08) {
+    E.hitT = Math.max(E.hitT, sec);
+  };
+  // спалах усієї арени
+  E.flashT = 0;
+  E.flashC = '#FFFFFF';
+  E.flash = function (color = '#FFFFFF', k = 1) {
+    E.flashC = color;
+    E.flashT = Math.max(E.flashT, 0.35 * k);
+  };
+
+  // ---------- персонаж гравця ----------
+  // Кругленький колобок у кольорі гравця з емоцією: idle | happy | scared | hurt | out | sly
+  E.avatar = function (g, x, y, r, p, mood = 'idle', rot = 0) {
+    const col = p.color || p;
+    const t = E.t + (p.seat || 0) * 0.7;
+    let sx = 1, sy = 1, dy = 0;
+    if (mood === 'happy') {
+      const j = Math.abs(Math.sin(t * 9));
+      dy = -j * r * 0.35;
+      sy = 1 + j * 0.08;
+      sx = 1 - j * 0.05;
+    } else if (mood === 'scared') {
+      x += Math.sin(t * 60) * r * 0.05;
+    } else if (mood === 'idle') {
+      const b = Math.sin(t * 3) * 0.04;
+      sy = 1 + b;
+      sx = 1 - b;
+    } else if (mood === 'hurt') {
+      sy = 0.88;
+      sx = 1.1;
+    }
+    g.save();
+    g.translate(x, y);
+    if (rot) g.rotate(rot);
+    g.translate(0, dy);
+    g.scale(sx, sy);
+    const out = mood === 'out';
+    // тінь
+    g.fillStyle = 'rgba(0,0,0,0.25)';
+    g.beginPath();
+    g.ellipse(0, r * 0.95 - dy / sy, r * 0.8, r * 0.2, 0, 0, TAU);
+    g.fill();
+    // тіло
+    g.fillStyle = out ? '#4A4468' : col.d;
+    g.beginPath();
+    g.arc(0, r * 0.08, r, 0, TAU);
+    g.fill();
+    g.fillStyle = out ? '#6B6489' : col.c;
+    g.beginPath();
+    g.arc(0, 0, r, 0, TAU);
+    g.fill();
+    g.fillStyle = 'rgba(255,255,255,0.28)';
+    g.beginPath();
+    g.ellipse(-r * 0.38, -r * 0.45, r * 0.28, r * 0.18, -0.5, 0, TAU);
+    g.fill();
+    // очі
+    const ex = r * 0.34, ey = -r * 0.12, er = r * 0.24;
+    g.lineCap = 'round';
+    g.strokeStyle = '#1A1233';
+    g.lineWidth = Math.max(1.5, r * 0.11);
+    for (const s of [-1, 1]) {
+      if (out || mood === 'hurt') {
+        g.beginPath();
+        g.moveTo(s * ex - er * 0.6, ey - er * 0.6);
+        g.lineTo(s * ex + er * 0.6, ey + er * 0.6);
+        g.moveTo(s * ex + er * 0.6, ey - er * 0.6);
+        g.lineTo(s * ex - er * 0.6, ey + er * 0.6);
+        g.stroke();
+      } else if (mood === 'happy') {
+        g.beginPath();
+        g.arc(s * ex, ey + er * 0.3, er * 0.75, Math.PI * 1.1, Math.PI * 1.9);
+        g.stroke();
+      } else {
+        const big = mood === 'scared' ? 1.25 : 1;
+        g.fillStyle = '#fff';
+        g.beginPath();
+        g.arc(s * ex, ey, er * big, 0, TAU);
+        g.fill();
+        g.fillStyle = '#1A1233';
+        const look = mood === 'sly' ? s * er * 0.3 : 0;
+        g.beginPath();
+        g.arc(s * ex + look, ey + er * 0.1, er * (mood === 'scared' ? 0.35 : 0.5), 0, TAU);
+        g.fill();
+        if (mood === 'sly') {
+          g.fillStyle = col.c;
+          g.fillRect(s * ex - er * 1.3, ey - er * 1.3, er * 2.6, er * 1.1);
+        }
+      }
+    }
+    // рот
+    g.strokeStyle = '#1A1233';
+    g.beginPath();
+    if (mood === 'happy') {
+      g.fillStyle = '#7A1E2A';
+      g.arc(0, r * 0.28, r * 0.3, 0, Math.PI);
+      g.fill();
+    } else if (mood === 'scared') {
+      g.fillStyle = '#1A1233';
+      g.ellipse(0, r * 0.42, r * 0.14, r * 0.2, 0, 0, TAU);
+      g.fill();
+    } else if (mood === 'hurt' || out) {
+      g.arc(0, r * 0.55, r * 0.22, Math.PI * 1.15, Math.PI * 1.85);
+      g.stroke();
+    } else if (mood === 'sly') {
+      g.moveTo(-r * 0.2, r * 0.38);
+      g.quadraticCurveTo(r * 0.1, r * 0.48, r * 0.3, r * 0.3);
+      g.stroke();
+    } else {
+      g.arc(0, r * 0.3, r * 0.18, 0.2, Math.PI - 0.2);
+      g.stroke();
+    }
+    g.lineCap = 'butt';
+    g.restore();
   };
 
   // ---------- малювання ----------
@@ -717,6 +846,12 @@
   }
 
   function step(dt) {
+    E.flashT = Math.max(0, E.flashT - dt);
+    if (E.hitT > 0) {
+      E.hitT -= dt;
+      E.shakeMag = Math.max(0, E.shakeMag - dt * 30);
+      return;
+    }
     E.t += dt;
     E.phaseT += dt;
     // таймери
@@ -804,10 +939,17 @@
       g.save();
       g.translate(f.x, f.y);
       if (f.rot) g.rotate(f.rot);
-      E.txt(g, f.text, 0, -k * 8 * ar.u, f.size, f.color, { stroke: 'rgba(0,0,0,0.55)' });
+      const pop = f.t < 0.15 ? 0.6 + U.outBack(f.t / 0.15) * 0.4 : 1;
+      E.txt(g, f.text, 0, -k * 8 * ar.u, f.size * pop * 1.15, f.color, { stroke: 'rgba(0,0,0,0.55)' });
       g.restore();
     }
     g.globalAlpha = 1;
+    if (E.flashT > 0) {
+      g.globalAlpha = Math.min(0.5, (E.flashT / 0.35) * 0.5);
+      g.fillStyle = E.flashC;
+      g.fillRect(ar.x, ar.y, ar.w, ar.h);
+      g.globalAlpha = 1;
+    }
     g.restore();
 
     if (E.phase === 'intro') drawIntro(g);
@@ -835,7 +977,14 @@
         const bodyS = Math.min(15.5, cw * 0.044);
         g.font = `600 ${bodyS}px ${G.FONT_B}`;
         const lines = E.wrap(g, d.desc, cw - 36);
-        const ch = Math.min(maxH, 64 + titleS * 1.4 + lines.length * bodyS * 1.38 + 40);
+        let verbS = Math.min(30, cw * 0.085);
+        if (d.verb) {
+          g.font = `900 ${verbS}px ${G.FONT_D}`;
+          const vw = g.measureText(d.verb).width;
+          if (vw > cw - 36) verbS *= (cw - 36) / vw;
+        }
+        const verbH = d.verb ? verbS * 1.5 : 0;
+        const ch = Math.min(maxH, 64 + titleS * 1.4 + verbH + lines.length * bodyS * 1.38 + 40);
         const top = dual ? cy - ch / 2 : ar.cy + 26;
         U.rr(g, cx - cw / 2, top, cw, ch, 18);
         g.fillStyle = '#231C47';
@@ -847,6 +996,15 @@
         E.emoji(g, d.icon, cx - cw / 2 + 38, y, 34);
         E.txt(g, d.name.toUpperCase(), cx - cw / 2 + 66, y + 1, titleS, '#F6F1FF', { align: 'left', weight: 800 });
         y += 34 + titleS * 0.4;
+        if (d.verb) {
+          const k = 1 + Math.sin(E.t * 6) * 0.04;
+          g.save();
+          g.translate(cx, y + verbS * 0.45);
+          g.scale(k, k);
+          E.txt(g, d.verb, 0, 0, verbS, '#FFC530', { weight: 900, stroke: '#140F2E', strokeW: verbS * 0.16 });
+          g.restore();
+          y += verbH;
+        }
         g.fillStyle = 'rgba(246,241,255,0.86)';
         g.font = `600 ${bodyS}px ${G.FONT_B}`;
         g.textAlign = 'left';
@@ -910,11 +1068,15 @@
         g.save();
         g.translate(cx, cy);
         g.scale(sc, sc);
-        if (!isDraw) {
-          const cs = 9 * u;
-          const n = ids.length;
-          ids.forEach((id, i) => E.crown(g, (i - (n - 1) / 2) * cs * 2.4, -cs * 1.5, cs, G.COLORS[id].c));
-        }
+        // персонажі: переможець стрибає в короні, решта — засмучені
+        const ar2 = Math.min(7.5 * u, (ar.w * 0.8) / (E.n * 2.6));
+        E.players.forEach((p, i) => {
+          const won = !isDraw && ids.includes(p.id);
+          const x = (i - (E.n - 1) / 2) * ar2 * 2.6;
+          const r = won ? ar2 * 1.25 : ar2;
+          E.avatar(g, x, -15 * u, r, p, won ? 'happy' : isDraw ? 'idle' : E.out[p.id] ? 'out' : 'hurt');
+          if (won) E.crown(g, x, -15 * u - r * 1.25 - Math.abs(Math.sin(E.t * 9 + p.seat * 0.7)) * r * 0.35, r * 0.55, '#FFC530');
+        });
         const txt = E.winText(ids);
         let s = Math.min(7.2 * u, 26);
         g.font = `900 ${s}px ${G.FONT_D}`;

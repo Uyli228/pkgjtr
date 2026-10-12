@@ -3,7 +3,7 @@
   const TAU = U.TAU;
   G.game({
     id: 'cake', name: 'Чий торт?', icon: '🎂', tag: 'Помста', bg: '#2A1C2E', btn: 'ПУСК',
-    desc: 'Катапульта з тортом крутиться в центрі. У кожного ОДИН постріл за раунд — натисни, коли вона дивиться на жертву. Торт у лідера — +2, у будь-кого — +1, в останнього — 0, у себе — мінус 1. П’ять раундів.',
+    verb: 'ЦІЛЬСЯ В ЛІДЕРА', desc: 'Один торт за раунд у того, на кого дивиться катапульта. Лідер +2, сам у себе −1.',
     create(E) {
       const ROUNDS = 5, WINDOW = 7;
       const sc = {}, shot = {}, cream = {}, bt = {};
@@ -52,6 +52,7 @@
         else pts = 1;
         sc[p.id] += pts;
         cream[q.id] = 3;
+        E.hitstop(0.07);
         G.sfx(q.id === p.id ? 'bad' : 'pop');
         E.shake(4);
         E.burst(hp.x, hp.y, ['#FFF8EA', '#FF9ECF', '#7A3E1E'], 30);
@@ -155,11 +156,8 @@
           }
           for (const p of E.players) {
             const hp = E.home(p, 13 * u);
-            g.fillStyle = p.color.c;
-            g.beginPath();
-            g.arc(hp.x, hp.y, 7 * u, 0, TAU);
-            g.fill();
-            E.emoji(g, cream[p.id] > 0 ? '😵' : shot[p.id] ? '😏' : '😬', hp.x, hp.y, 8 * u, p.rot);
+            const aimed = targetAt(a);
+            E.avatar(g, hp.x, hp.y, 7 * u, p, cream[p.id] > 0 ? 'hurt' : aimed && aimed.id === p.id ? 'scared' : shot[p.id] ? 'sly' : 'idle', p.rot);
             if (cream[p.id] > 0) {
               g.globalAlpha = Math.min(1, cream[p.id]);
               g.fillStyle = '#FFF8EA';

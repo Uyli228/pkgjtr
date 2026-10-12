@@ -1,0 +1,173 @@
+{
+  "table": [
+    {
+      "id": "tower",
+      "name": "Спільна вежа",
+      "finished": "9/9",
+      "median_s": 16.9,
+      "draw_rate": 0,
+      "errors": []
+    },
+    {
+      "id": "lastsec",
+      "name": "Остання секунда",
+      "finished": "9/9",
+      "median_s": 28.3,
+      "draw_rate": 0,
+      "errors": []
+    },
+    {
+      "id": "dragon",
+      "name": "Сплячий дракон",
+      "finished": "9/9",
+      "median_s": 31.1,
+      "draw_rate": 0.11,
+      "errors": []
+    },
+    {
+      "id": "auction",
+      "name": "Аукціон наосліп",
+      "finished": "9/9",
+      "median_s": 26.1,
+      "draw_rate": 0.11,
+      "errors": []
+    },
+    {
+      "id": "jackpot",
+      "name": "Джекпот привидів",
+      "finished": "9/9",
+      "median_s": 34.3,
+      "draw_rate": 0.11,
+      "errors": []
+    },
+    {
+      "id": "laser",
+      "name": "Лазерна стеля",
+      "finished": "9/9",
+      "median_s": 25,
+      "draw_rate": 0,
+      "errors": []
+    },
+    {
+      "id": "crowd",
+      "name": "Хто з них ти?",
+      "finished": "9/9",
+      "median_s": 32.4,
+      "draw_rate": 0,
+      "errors": []
+    },
+    {
+      "id": "alarm",
+      "name": "П’ять фруктів",
+      "finished": "9/9",
+      "median_s": 36.9,
+      "draw_rate": 0,
+      "errors": []
+    },
+    {
+      "id": "cake",
+      "name": "Чий торт?",
+      "finished": "9/9",
+      "median_s": 20.8,
+      "draw_rate": 0,
+      "errors": []
+    },
+    {
+      "id": "trap",
+      "name": "Пастка для друга",
+      "finished": "9/9",
+      "median_s": 18.6,
+      "draw_rate": 0.22,
+      "errors": []
+    },
+    {
+      "id": "bomb",
+      "name": "Бомба",
+      "finished": "9/9",
+      "median_s": 22.8,
+      "draw_rate": 0,
+      "errors": []
+    },
+    {
+      "id": "frog",
+      "name": "Жаб'ячий язик",
+      "finished": "9/9",
+      "median_s": 8.6,
+      "draw_rate": 0,
+      "errors": []
+    },
+    {
+      "id": "balloon",
+      "name": "Повітряна кулька",
+      "finished": "9/9",
+      "median_s": 12,
+      "draw_rate": 0,
+      "errors": []
+    },
+    {
+      "id": "stopwatch",
+      "name": "Секундомір",
+      "finished": "9/9",
+      "median_s": 9.8,
+      "draw_rate": 0.11,
+      "errors": []
+    },
+    {
+      "id": "mouse",
+      "name": "Мишка і кіт",
+      "finished": "9/9",
+      "median_s": 8.2,
+      "draw_rate": 0,
+      "errors": []
+    },
+    {
+      "id": "knives",
+      "name": "Ножі в колоду",
+      "finished": "9/9",
+      "median_s": 6.5,
+      "draw_rate": 0,
+      "errors": []
+    },
+    {
+      "id": "parking",
+      "name": "Паркування",
+      "finished": "9/9",
+      "median_s": 3.1,
+      "draw_rate": 0.33,
+      "errors": []
+    },
+    {
+      "id": "chicken",
+      "name": "Курча на рейках",
+      "finished": "9/9",
+      "median_s": 4.2,
+      "draw_rate": 0,
+      "errors": []
+    },
+    {
+      "id": "ufo",
+      "name": "НЛО-збирачі",
+      "finished": "9/9",
+      "median_s": 30,
+      "draw_rate": 0,
+      "errors": []
+    },
+    {
+      "id": "orbit",
+      "name": "Орбіта",
+      "finished": "9/9",
+      "median_s": 11.7,
+      "draw_rate": 0,
+      "errors": []
+    },
+    {
+      "id": "curling",
+      "name": "Керлінг-бум",
+      "finished": "9/9",
+      "median_s": 11.9,
+      "draw_rate": 0,
+      "errors": []
+    }
+  ],
+  "pageErrors": []
+}

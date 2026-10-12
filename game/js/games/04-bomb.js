@@ -3,7 +3,7 @@
   const TAU = U.TAU;
   G.game({
     id: 'bomb', name: 'Бомба', icon: '💣', tag: 'Нерви', bg: '#1B1424', btn: 'ПЕРЕДАЙ',
-    desc: 'Бомба в того, на кого показує ґніт. Натисніть стільки разів, скільки крапок на бомбі, — і вона полетить далі. Вибухнула у вас — ви вибули.',
+    verb: 'ПЕРЕДАЙ!', desc: 'Натисни стільки разів, скільки крапок на бомбі, — і вона полетить далі. Вибухнула в тебе — вибув.',
     create(E) {
       let holder = null, need = 0, fuse = 0, fuseT = 0, flyFrom = null, flyT = 0, beepT = 0, pause = 0, botNext = 0, boomT = 0;
       function pos(p) {
@@ -58,6 +58,7 @@
             E.shake(14);
             E.burst(ps.x, ps.y, ['#FF5468', '#FFC530', '#FF9E4A', '#fff'], 70, 1.4);
             boomT = 1;
+            E.hitstop(0.12);
             E.eliminate(holder);
             holder = null;
             pause = 1.4;
@@ -93,16 +94,7 @@
           }
           for (const p of E.players) {
             const ps = pos(p);
-            g.beginPath();
-            g.arc(ps.x, ps.y, 8 * u, 0, TAU);
-            g.fillStyle = E.out[p.id] ? '#2C2747' : p.color.c;
-            g.fill();
-            if (holder === p.id) {
-              g.lineWidth = 1.2 * u;
-              g.strokeStyle = '#fff';
-              g.stroke();
-            }
-            E.txt(g, E.out[p.id] ? '✖' : '', ps.x, ps.y, 7 * u, '#8D86B0');
+            E.avatar(g, ps.x, ps.y, 7.5 * u, p, E.out[p.id] ? 'out' : holder === p.id ? 'scared' : 'sly', p.rot);
           }
           if (holder == null) {
             if (boomT > 0) {

@@ -3,7 +3,7 @@
   const TAU = U.TAU;
   G.game({
     id: 'dragon', name: 'Сплячий дракон', icon: '🐉', tag: 'Жадібність', bg: '#1E1424', btn: 'ХАП',
-    desc: 'Кожне натискання — монета з драконячого скарбу. Але кожен «хап» потроху будить дракона. Коли він прокинеться, усі, хто хапав в останню секунду, втрачають весь улов раунду. Вчасно зупинись! Три раунди.',
+    verb: 'НЕ БУДИ!', desc: 'Тап — монета зі скарбу. Кожен тап будить дракона: хто хапав в останню секунду, втрачає все.',
     create(E) {
       const ROUNDS = 3;
       const bank = {}, haul = {}, lastT = {}, bt = {}, risk = {};
@@ -42,6 +42,8 @@
             st = 'awake';
             pause = 2.4;
             fireT = 1.2;
+            E.hitstop(0.12);
+            E.flash('#FF9E4A');
             G.sfx('boom');
             E.shake(9);
             for (const p of E.players) {
@@ -155,11 +157,16 @@
           }
           for (const p of E.players) {
             const q = pos(p);
-            g.fillStyle = burnt.includes(p.id) && awake ? '#4A4468' : p.color.c;
-            g.beginPath();
-            g.arc(q.x, q.y, 6.5 * u, 0, TAU);
-            g.fill();
-            E.txt(g, String(haul[p.id]), q.x, q.y + 0.3 * u, 5 * u, '#1A1233', { weight: 900 });
+            const hot = st === 'sleep' && E.playT - lastT[p.id] < 1 && k > 0.6;
+            const mood = awake ? (burnt.includes(p.id) ? 'hurt' : 'happy') : hot ? 'scared' : haul[p.id] > 0 ? 'sly' : 'idle';
+            E.avatar(g, q.x, q.y, 6.5 * u, p, mood, p.rot);
+            if (awake && burnt.includes(p.id)) {
+              g.fillStyle = 'rgba(30,20,20,0.55)';
+              g.beginPath();
+              g.arc(q.x, q.y, 6.5 * u, 0, TAU);
+              g.fill();
+            }
+            E.txt(g, '💰' + haul[p.id], q.x, q.y + (p.rot ? -10 : 10) * u, 3.6 * u, '#FFE7A3', { stroke: '#140D1A' });
             E.hud(g, p, '💰 ' + bank[p.id], { color: p.color.l });
           }
           E.dual(g, (x, y) => E.txt(g, `РАУНД ${Math.min(round, ROUNDS)}/${ROUNDS}`, x, y, 3.2 * u, 'rgba(246,241,255,0.5)', { body: true, weight: 800 }), 34 * u, true);

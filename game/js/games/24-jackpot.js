@@ -3,7 +3,7 @@
   const TAU = U.TAU;
   G.game({
     id: 'jackpot', name: 'Джекпот привидів', icon: '👻', tag: 'Блеф', bg: '#14122E', btn: 'ТРИМАЙ',
-    desc: 'Усі тримають кнопки — джекпот росте. Відпустив — забрав поточну суму. Але джекпот колись вибухне, і хто ще тримає, лишиться ні з чим. Хто вже відпустив, стає привидом і тапами влаштовує фальшиві вибухи, щоб налякати інших. Три раунди.',
+    verb: 'ВІДПУСТИ ВЧАСНО', desc: 'Тримай — джекпот росте, відпусти — забери. Вибух забирає все. Привиди лякають фальшивими вибухами.',
     create(E) {
       const ROUNDS = 3;
       const sc = {}, got = {}, holding = {}, ghostCd = {}, bt = {}, plan = {};
@@ -59,6 +59,7 @@
               t = 0;
               boomT = 1.4;
               busted = true;
+              E.hitstop(0.12);
               G.sfx('boom');
               E.shake(12);
               E.burst(E.arena.cx, E.arena.cy, ['#FFC530', '#FF5468', '#FF9E4A', '#fff'], 80, 1.4);
@@ -152,14 +153,8 @@
             const q = E.home(p, (p.corner ? 12 : 10) * u);
             const ghost = !holding[p.id] && st !== 'ready';
             g.globalAlpha = ghost ? 0.75 : 1;
-            g.beginPath();
-            g.arc(q.x, q.y, 6.5 * u, 0, TAU);
-            g.fillStyle = ghost ? '#2C2747' : p.color.c;
-            g.fill();
-            g.strokeStyle = p.color.c;
-            g.lineWidth = 0.8 * u;
-            g.stroke();
-            E.emoji(g, ghost ? '👻' : st === 'ready' && !E.down[p.id] ? '🤷' : '✊', q.x, q.y + (ghost ? Math.sin(E.t * 3 + p.seat) * u : 0), 7 * u, p.rot);
+            if (ghost) E.emoji(g, '👻', q.x, q.y + Math.sin(E.t * 3 + p.seat) * u, 9 * u, p.rot);
+            else E.avatar(g, q.x, q.y, 6.5 * u, p, st === 'grow' ? (J > 25 ? 'scared' : 'sly') : st === 'end' && got[p.id] === 0 ? 'hurt' : 'idle', p.rot);
             g.globalAlpha = 1;
             E.hud(g, p, String(sc[p.id]), { color: p.color.l, size: 5 * u });
           }
