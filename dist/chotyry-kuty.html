@@ -89,7 +89,7 @@ button { font: inherit; color: inherit; cursor: pointer; touch-action: manipulat
 button:focus-visible, input:focus-visible + i { outline: 3px solid var(--p4); outline-offset: 2px; }
 [hidden] { display: none !important; }
 
-#app { position: relative; height: 100%; overflow: hidden; }
+#app { position: relative; height: 100%; overflow: hidden; box-sizing: border-box; padding-inline: env(safe-area-inset-left, 0px) env(safe-area-inset-right, 0px); }
 
 #cv {
   position: absolute; top: 0; left: 0;
@@ -113,7 +113,7 @@ body.playing .corners, body.playing .screen { display: none !important; }
   position: absolute; inset: 0;
   overflow-y: auto; overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
-  padding-inline: 16px;
+  padding-inline: calc(16px + env(safe-area-inset-left, 0px)) calc(16px + env(safe-area-inset-right, 0px));
   padding-block: 22px 32px;
   z-index: 1;
   display: flex; flex-direction: column; gap: 20px;
@@ -237,6 +237,44 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
 /* ----- сітка ігор ----- */
 .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 @media (min-width: 560px) { .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (orientation: landscape) { .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
+/* ----- ландшафт: екран низький, тому меню у дві колонки й компактніші елементи ----- */
+@media (orientation: landscape) and (max-height: 560px) {
+  .screen { padding-block: 12px 16px; gap: 12px; }
+  #home { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-content: start; column-gap: 20px; row-gap: 12px; }
+  #home > .logo { grid-column: 1; grid-row: 1; padding-top: 0; }
+  #home > .block:nth-of-type(1) { grid-column: 1; grid-row: 2; }
+  #home > .block:nth-of-type(2) { grid-column: 1; grid-row: 3; }
+  #home > .modes { grid-column: 2; grid-row: 1 / span 3; align-self: center; }
+  #home > .foot { grid-column: 1 / span 2; grid-row: 4; margin-top: 0; }
+  .logo-mark { width: 48px; height: 48px; }
+  h1 { font-size: 28px; }
+  .count { padding: 8px 4px 6px; }
+  .count .num { font-size: 22px; }
+  .count .cap { font-size: 10.5px; }
+  .slot { padding: 6px 10px; }
+  .slot .dot { width: 24px; height: 24px; }
+  .mode { padding: 12px 16px; }
+  .mode span { font-size: 17px; }
+  .card { padding: 10px 10px 8px; gap: 4px; }
+  .card .icon { width: 38px; height: 38px; font-size: 22px; }
+  .card .name { font-size: 12.5px; }
+  .cta { padding: 12px 14px; font-size: 15px; }
+  .sheet { padding: 14px 14px 12px; gap: 10px; max-height: calc(100% - 16px); overflow-y: auto; }
+  .sheet h3 { font-size: 18px; }
+  .standings li { padding: 6px 10px; }
+  #board, #final, #tsetup, #settings, #stats { max-width: 760px; }
+}
+@media (orientation: landscape) and (max-height: 360px) {
+  .tagline, .hint { display: none; }
+  .label { font-size: 10.5px; }
+  #home { row-gap: 8px; }
+  .slot .who span { display: none; }
+  .logo-mark { width: 40px; height: 40px; }
+  h1 { font-size: 24px; }
+  .foot button { padding: 6px 12px; font-size: 13px; }
+}
 .card {
   position: relative;
   display: flex; flex-direction: column; align-items: flex-start; gap: 6px;
@@ -845,13 +883,16 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
   };
 
   function resize() {
-    const vw = E.canvas.parentElement.clientWidth;
-    const vh = E.canvas.parentElement.clientHeight;
+    const par = E.canvas.parentElement, cs = getComputedStyle(par);
+    const padL = parseFloat(cs.paddingLeft) || 0, padR = parseFloat(cs.paddingRight) || 0;
+    // поля під виріз камери / закруглення екрана
+    const vw = par.clientWidth - padL - padR;
+    const vh = par.clientHeight;
     // гра горизонтальна: полотно на всю ширину телефона, гравці — з довгих боків
     const W = vw;
     E.W = W;
     E.H = vh;
-    E.ox = Math.round((vw - W) / 2);
+    E.ox = Math.round(padL + (vw - W) / 2);
     E.dpr = Math.min(2, window.devicePixelRatio || 1);
     E.canvas.style.width = W + 'px';
     E.canvas.style.height = vh + 'px';
@@ -864,7 +905,8 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
 
   function layout() {
     const W = E.W, H = E.H;
-    const bh = Math.round(U.clamp(H * 0.105, 60, 104));
+    // кнопки пропорційні висоті екрана, щоб влазити і на низьких телефонах (ландшафт)
+    const bh = Math.round(U.clamp(H * 0.15, 40, 92));
     E.bh = bh;
     const ar = (E.arena = { x: 0, y: bh, w: W, h: H - 2 * bh });
     ar.cx = ar.x + ar.w / 2;
@@ -1840,12 +1882,12 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
     g.strokeStyle = U.alpha(p.color.l, 0.6);
     g.stroke();
     g.beginPath();
-    g.arc(cx + st.x * R, cy + st.y * R, R * 0.48, 0, TAU);
+    g.arc(cx + st.x * R * 0.55, cy + st.y * R * 0.55, R * 0.48, 0, TAU);
     g.fillStyle = p.color.c;
     g.fill();
     g.fillStyle = 'rgba(255,255,255,0.3)';
     g.beginPath();
-    g.arc(cx + st.x * R - R * 0.12, cy + st.y * R - R * 0.12, R * 0.18, 0, TAU);
+    g.arc(cx + st.x * R * 0.55 - R * 0.12, cy + st.y * R * 0.55 - R * 0.12, R * 0.18, 0, TAU);
     g.fill();
     if (p.bot) E.txt(g, 'БОТ', b.x + b.w / 2 + (p.rot ? -1 : 1) * (b.w / 2 - 30), b.y + b.h / 2, 11, U.alpha('#1A1233', 0.7), { body: true, weight: 800 });
   }

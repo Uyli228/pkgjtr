@@ -253,13 +253,16 @@
   };
 
   function resize() {
-    const vw = E.canvas.parentElement.clientWidth;
-    const vh = E.canvas.parentElement.clientHeight;
+    const par = E.canvas.parentElement, cs = getComputedStyle(par);
+    const padL = parseFloat(cs.paddingLeft) || 0, padR = parseFloat(cs.paddingRight) || 0;
+    // поля під виріз камери / закруглення екрана
+    const vw = par.clientWidth - padL - padR;
+    const vh = par.clientHeight;
     // гра горизонтальна: полотно на всю ширину телефона, гравці — з довгих боків
     const W = vw;
     E.W = W;
     E.H = vh;
-    E.ox = Math.round((vw - W) / 2);
+    E.ox = Math.round(padL + (vw - W) / 2);
     E.dpr = Math.min(2, window.devicePixelRatio || 1);
     E.canvas.style.width = W + 'px';
     E.canvas.style.height = vh + 'px';
@@ -272,7 +275,8 @@
 
   function layout() {
     const W = E.W, H = E.H;
-    const bh = Math.round(U.clamp(H * 0.105, 60, 104));
+    // кнопки пропорційні висоті екрана, щоб влазити і на низьких телефонах (ландшафт)
+    const bh = Math.round(U.clamp(H * 0.15, 40, 92));
     E.bh = bh;
     const ar = (E.arena = { x: 0, y: bh, w: W, h: H - 2 * bh });
     ar.cx = ar.x + ar.w / 2;
@@ -1248,12 +1252,12 @@
     g.strokeStyle = U.alpha(p.color.l, 0.6);
     g.stroke();
     g.beginPath();
-    g.arc(cx + st.x * R, cy + st.y * R, R * 0.48, 0, TAU);
+    g.arc(cx + st.x * R * 0.55, cy + st.y * R * 0.55, R * 0.48, 0, TAU);
     g.fillStyle = p.color.c;
     g.fill();
     g.fillStyle = 'rgba(255,255,255,0.3)';
     g.beginPath();
-    g.arc(cx + st.x * R - R * 0.12, cy + st.y * R - R * 0.12, R * 0.18, 0, TAU);
+    g.arc(cx + st.x * R * 0.55 - R * 0.12, cy + st.y * R * 0.55 - R * 0.12, R * 0.18, 0, TAU);
     g.fill();
     if (p.bot) E.txt(g, 'БОТ', b.x + b.w / 2 + (p.rot ? -1 : 1) * (b.w / 2 - 30), b.y + b.h / 2, 11, U.alpha('#1A1233', 0.7), { body: true, weight: 800 });
   }
