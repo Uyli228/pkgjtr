@@ -255,8 +255,8 @@
   function resize() {
     const vw = E.canvas.parentElement.clientWidth;
     const vh = E.canvas.parentElement.clientHeight;
-    // гра завжди вертикальна: на широких екранах — центральна колонка
-    const W = Math.min(vw, Math.round(vh * 0.8));
+    // гра горизонтальна: полотно на всю ширину телефона, гравці — з довгих боків
+    const W = vw;
     E.W = W;
     E.H = vh;
     E.ox = Math.round((vw - W) / 2);
@@ -1014,42 +1014,42 @@
     g.fillStyle = 'rgba(10,8,24,0.72)';
     g.fillRect(ar.x, ar.y, ar.w, ar.h);
     const dual = E.needDual;
-    const maxH = ar.h / 2 - 26;
-    const cw = Math.min(ar.w - 28, 380);
+    // у ландшафті на двох гравців кожна половина низька: картка ширша, а шрифт стискається, щоб вміститися
+    const maxH = dual ? ar.h / 2 - 12 : ar.h - 40;
+    const cw = Math.min(ar.w - 28, ar.w > ar.h * 1.6 ? 560 : 380);
     E.dual(
       g,
       (cx, cy) => {
-        let titleS = Math.min(26, cw * 0.075);
-        g.font = `800 ${titleS}px ${G.FONT_D}`;
-        const tw = g.measureText(d.name.toUpperCase()).width;
-        if (tw > cw - 84) titleS *= (cw - 84) / tw;
-        const bodyS = Math.min(15.5, cw * 0.044);
-        g.font = `600 ${bodyS}px ${G.FONT_B}`;
-        const lines = E.wrap(g, d.desc, cw - 36);
-        let verbS = Math.min(30, cw * 0.085);
-        if (d.verb) {
-          g.font = `900 ${verbS}px ${G.FONT_D}`;
-          const vw = g.measureText(d.verb).width;
-          if (vw > cw - 36) verbS *= (cw - 36) / vw;
-        }
-        const verbH = d.verb ? verbS * 1.5 : 0;
-        const ch = Math.min(maxH, 64 + titleS * 1.4 + verbH + lines.length * bodyS * 1.38 + 40);
-        const top = dual ? cy - ch / 2 : ar.cy + 26;
+        const measure = (k) => {
+          const titleS = Math.min(26, cw * 0.075) * k;
+          const bodyS = Math.min(15.5, cw * 0.044) * k;
+          const verbS = Math.min(30, cw * 0.085) * k;
+          g.font = `600 ${bodyS}px ${G.FONT_B}`;
+          const lines = E.wrap(g, d.desc, cw - 36);
+          const verbH = d.verb ? verbS * 1.5 : 0;
+          const need = 64 * k + titleS * 1.4 + verbH + lines.length * bodyS * 1.38 + 40 * k;
+          return { titleS, bodyS, verbS, lines, verbH, need };
+        };
+        let k = 1, m = measure(1);
+        if (m.need > maxH) { k = maxH / m.need; m = measure(k); }
+        const { titleS, bodyS, verbS, lines, verbH } = m;
+        const ch = Math.min(maxH, m.need);
+        const top = dual ? cy - ch / 2 : ar.cy - ch / 2;
         U.rr(g, cx - cw / 2, top, cw, ch, 18);
         g.fillStyle = '#231C47';
         g.fill();
         g.lineWidth = 2;
         g.strokeStyle = 'rgba(255,255,255,0.12)';
         g.stroke();
-        let y = top + 34;
-        E.emoji(g, d.icon, cx - cw / 2 + 38, y, 34);
-        E.txt(g, d.name.toUpperCase(), cx - cw / 2 + 66, y + 1, titleS, '#F6F1FF', { align: 'left', weight: 800 });
-        y += 34 + titleS * 0.4;
+        let y = top + 34 * k;
+        E.emoji(g, d.icon, cx - cw / 2 + 38 * k, y, 34 * k);
+        E.txt(g, d.name.toUpperCase(), cx - cw / 2 + 66 * k, y + 1, titleS, '#F6F1FF', { align: 'left', weight: 800 });
+        y += 34 * k + titleS * 0.4;
         if (d.verb) {
-          const k = 1 + Math.sin(E.t * 6) * 0.04;
+          const pulse = 1 + Math.sin(E.t * 6) * 0.04;
           g.save();
           g.translate(cx, y + verbS * 0.45);
-          g.scale(k, k);
+          g.scale(pulse, pulse);
           E.txt(g, d.verb, 0, 0, verbS, '#FFC530', { weight: 900, stroke: '#140F2E', strokeW: verbS * 0.16 });
           g.restore();
           y += verbH;
@@ -1064,7 +1064,7 @@
         }
         const pulse = 0.55 + 0.45 * Math.sin(E.t * 5);
         g.globalAlpha = pulse;
-        E.txt(g, 'Натисніть свою кнопку, коли готові', cx, top + ch - 20, Math.min(13, cw * 0.036), '#FFC530', { body: true, weight: 800 });
+        E.txt(g, 'Натисніть свою кнопку, коли готові', cx, top + ch - 14 * k, Math.min(13, cw * 0.036) * k, '#FFC530', { body: true, weight: 800 });
         g.globalAlpha = 1;
       },
       ar.h * 0.25

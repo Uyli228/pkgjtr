@@ -517,7 +517,8 @@
   // ---------- орієнтація ----------
   function checkRotate() {
     const coarse = matchMedia('(pointer: coarse)').matches;
-    $('#rotate').hidden = !(coarse && innerWidth > innerHeight && innerHeight < 520);
+    // гра горизонтальна: просимо повернути телефон, якщо він стоїть вертикально
+    $('#rotate').hidden = !(coarse && innerHeight > innerWidth);
   }
   window.addEventListener('resize', checkRotate);
 

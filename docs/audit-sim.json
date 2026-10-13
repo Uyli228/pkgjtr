@@ -3,31 +3,31 @@
     {
       "id": "sumo",
       "name": "Сумо",
-      "finished": "9/9",
-      "median_s": 28.2,
-      "draw_rate": 0.11,
+      "finished": "3/3",
+      "median_s": 27,
+      "draw_rate": 0,
       "errors": []
     },
     {
       "id": "croc",
       "name": "Крокодил",
-      "finished": "9/9",
-      "median_s": 16.3,
+      "finished": "3/3",
+      "median_s": 21.2,
       "draw_rate": 0,
       "errors": []
     },
     {
       "id": "bomb",
       "name": "Бомба",
-      "finished": "9/9",
-      "median_s": 20.6,
+      "finished": "3/3",
+      "median_s": 27.8,
       "draw_rate": 0,
       "errors": []
     },
     {
       "id": "frog",
       "name": "Жаб'ячий язик",
-      "finished": "9/9",
+      "finished": "3/3",
       "median_s": 5.2,
       "draw_rate": 0,
       "errors": []
@@ -35,23 +35,23 @@
     {
       "id": "rope",
       "name": "Скакалка",
-      "finished": "9/9",
-      "median_s": 27.2,
+      "finished": "3/3",
+      "median_s": 27.1,
       "draw_rate": 0,
       "errors": []
     },
     {
       "id": "parking",
       "name": "Паркування",
-      "finished": "9/9",
-      "median_s": 13.6,
+      "finished": "3/3",
+      "median_s": 14,
       "draw_rate": 0,
       "errors": []
     },
     {
       "id": "knives",
       "name": "Ножі в колоду",
-      "finished": "9/9",
+      "finished": "3/3",
       "median_s": 4.2,
       "draw_rate": 0,
       "errors": []
@@ -59,47 +59,47 @@
     {
       "id": "curling",
       "name": "Пінгвіни",
-      "finished": "9/9",
-      "median_s": 8.3,
+      "finished": "3/3",
+      "median_s": 8.7,
       "draw_rate": 0,
       "errors": []
     },
     {
       "id": "traffic",
       "name": "Світлофор",
-      "finished": "9/9",
-      "median_s": 7.9,
+      "finished": "3/3",
+      "median_s": 8.2,
       "draw_rate": 0,
       "errors": []
     },
     {
       "id": "monster",
       "name": "Монстр атакує",
-      "finished": "9/9",
-      "median_s": 19.2,
-      "draw_rate": 0.22,
+      "finished": "3/3",
+      "median_s": 17.6,
+      "draw_rate": 0,
       "errors": []
     },
     {
       "id": "fruits",
       "name": "Фруктики",
-      "finished": "9/9",
+      "finished": "3/3",
       "median_s": 25,
-      "draw_rate": 0,
+      "draw_rate": 0.33,
       "errors": []
     },
     {
       "id": "swords",
       "name": "Меч на меч",
-      "finished": "9/9",
-      "median_s": 10.2,
+      "finished": "3/3",
+      "median_s": 12,
       "draw_rate": 0,
       "errors": []
     },
     {
       "id": "horse",
       "name": "Кінь",
-      "finished": "9/9",
+      "finished": "3/3",
       "median_s": 21.4,
       "draw_rate": 0,
       "errors": []
@@ -107,87 +107,87 @@
     {
       "id": "ninja",
       "name": "Ніндзя",
-      "finished": "9/9",
-      "median_s": 19.5,
+      "finished": "3/3",
+      "median_s": 27.4,
       "draw_rate": 0,
       "errors": []
     },
     {
       "id": "paws",
       "name": "Лапи",
-      "finished": "9/9",
-      "median_s": 42.2,
+      "finished": "3/3",
+      "median_s": 37,
       "draw_rate": 0,
       "errors": []
     },
     {
       "id": "memory",
       "name": "Картки",
-      "finished": "9/9",
-      "median_s": 32,
+      "finished": "3/3",
+      "median_s": 31.3,
       "draw_rate": 0,
       "errors": []
     },
     {
       "id": "pool",
       "name": "Більярд",
-      "finished": "9/9",
+      "finished": "3/3",
       "median_s": 45,
-      "draw_rate": 0.67,
+      "draw_rate": 0.33,
       "errors": []
     },
     {
       "id": "skill",
       "name": "Скілчек",
-      "finished": "9/9",
-      "median_s": 14.6,
+      "finished": "3/3",
+      "median_s": 15.7,
       "draw_rate": 0,
       "errors": []
     },
     {
       "id": "tower",
       "name": "Вежа",
-      "finished": "9/9",
+      "finished": "3/3",
       "median_s": 20,
-      "draw_rate": 0.11,
+      "draw_rate": 0,
       "errors": []
     },
     {
       "id": "lastsec",
       "name": "Остання секунда",
-      "finished": "9/9",
-      "median_s": 20,
+      "finished": "3/3",
+      "median_s": 20.4,
       "draw_rate": 0,
       "errors": []
     },
     {
       "id": "chairs",
       "name": "Стільці",
-      "finished": "9/9",
-      "median_s": 8.6,
+      "finished": "3/3",
+      "median_s": 9.3,
       "draw_rate": 0,
       "errors": []
     },
     {
       "id": "alarm",
       "name": "П’ять фруктів",
-      "finished": "9/9",
-      "median_s": 19.4,
+      "finished": "3/3",
+      "median_s": 18.8,
       "draw_rate": 0,
       "errors": []
     },
     {
       "id": "chicken",
       "name": "Курча на рейках",
-      "finished": "9/9",
-      "median_s": 3.6,
+      "finished": "3/3",
+      "median_s": 4.4,
       "draw_rate": 0,
       "errors": []
     },
     {
       "id": "ufo",
       "name": "НЛО-збирачі",
-      "finished": "9/9",
+      "finished": "3/3",
       "median_s": 30,
       "draw_rate": 0,
       "errors": []
@@ -195,8 +195,8 @@
     {
       "id": "orbit",
       "name": "Орбіта",
-      "finished": "9/9",
-      "median_s": 19.6,
+      "finished": "3/3",
+      "median_s": 24.5,
       "draw_rate": 0,
       "errors": []
     }
