@@ -10,7 +10,7 @@
 
   const app = {
     slots: G.store.get('slots', ['human', 'human', 'off', 'off']),
-    target: G.store.get('target', 5),
+    target: G.store.get('tgames', 5),
     pool: G.store.get('pool', null),
     tour: null,
     current: null, // поточна гра
@@ -166,11 +166,12 @@
       if (r && r.catch) r.catch(() => {});
     } catch (e) { /* не підтримується */ }
   }
-  function launch(def, onEnd) {
+  function launch(def, onEnd, slots) {
     G.audio.init();
     enterFullscreen();
     app.current = def;
     app.onEnd = onEnd;
+    app.curSlots = slots || app.slots;
     $('#after').hidden = true;
     $('#pause').hidden = true;
     document.body.classList.add('playing');
@@ -178,7 +179,7 @@
     // дочекаємось, поки розміри оновляться після показу полотна
     requestAnimationFrame(() => {
       window.dispatchEvent(new Event('resize'));
-      E.setPlayers(app.slots);
+      E.setPlayers(app.curSlots);
       E.start(def, (w) => {
         recordGame(def, w);
         onEnd(w);
@@ -218,7 +219,7 @@
   }
   $('#a-again').addEventListener('click', () => {
     G.sfx('ui');
-    launch(app.current, app.onEnd);
+    launch(app.current, app.onEnd, app.curSlots);
   });
   $('#a-other').addEventListener('click', () => {
     G.sfx('ui');
@@ -257,13 +258,13 @@
   $('#p-restart').addEventListener('click', () => {
     G.sfx('ui');
     E.paused = false;
-    launch(app.current, app.onEnd);
+    launch(app.current, app.onEnd, app.curSlots);
   });
   $('#p-quit').addEventListener('click', () => {
     G.sfx('ui');
     E.paused = false;
     leaveGame();
-    if (app.tour) renderBoard();
+    if (app.tour) renderBoard(false);
     else show(app.returnTo === 'home' ? 'home' : 'games');
   });
   document.addEventListener('visibilitychange', () => {
@@ -305,7 +306,7 @@
   $$('#seg-target button').forEach((b) =>
     b.addEventListener('click', () => {
       app.target = +b.dataset.v;
-      G.store.set('target', app.target);
+      G.store.set('tgames', app.target);
       G.sfx('ui');
       renderTarget();
     })
@@ -342,7 +343,7 @@
     G.sfx('ui');
     const players = app.slots.map((t, id) => ({ t, id })).filter((x) => x.t !== 'off');
     app.tour = {
-      target: app.target,
+      games: app.target, // скільки ігор у турнірі
       pool: app.pool.slice(),
       queue: [],
       next: null,
@@ -350,63 +351,133 @@
       ids: players.map((x) => x.id),
       bots: Object.fromEntries(players.map((x) => [x.id, x.t === 'bot'])),
       history: [],
+      duel: null, // учасники фінальної дуелі при нічиїй
     };
     nextFromQueue(app.tour);
-    renderBoard();
+    renderBoard(true);
   });
 
-  function standingsHTML(t, mark) {
+  const won = (h, t) => h.winners.length && h.winners.length < h.players;
+  // місця з урахуванням рівних очок (1, 1, 3 …)
+  function ranking(t) {
     const order = t.ids.slice().sort((a, b) => t.scores[b] - t.scores[a] || a - b);
-    const top = t.scores[order[0]];
-    return order
-      .map((id) => {
+    return order.map((id) => ({ id, place: 1 + order.filter((o) => t.scores[o] > t.scores[id]).length }));
+  }
+  function standingsHTML(t) {
+    const top = Math.max(...t.ids.map((id) => t.scores[id]));
+    return ranking(t)
+      .map(({ id, place }) => {
         const c = G.COLORS[id];
-        const pips = Array.from({ length: t.target }, (_, i) => `<i class="${i < t.scores[id] ? 'f' : ''}"></i>`).join('');
+        const stars = t.scores[id] ? '★'.repeat(Math.min(t.scores[id], 12)) : '—';
         const lead = top > 0 && t.scores[id] === top ? ' lead' : '';
-        return `<li class="${lead}" style="--c:${c.c}"><span class="dot">${id + 1}</span><span class="nm">${c.name}<small>${t.bots[id] ? 'бот' : 'гравець'}${mark === id ? ' · чемпіон' : ''}</small></span><span class="crowns" aria-label="${t.scores[id]} з ${t.target}">${pips}</span></li>`;
+        const duel = t.duel && !t.duel.includes(id) ? ' dim' : '';
+        return `<li class="${lead}${duel}" style="--c:${c.c}"><span class="dot">${place}</span><span class="nm">${c.name}<small>${t.bots[id] ? 'бот' : 'гравець'}</small></span><span class="stars" aria-label="${t.scores[id]} зірок">${stars}</span><span class="sc">${t.scores[id]}</span></li>`;
       })
       .join('');
   }
-  function renderBoard() {
+  function trackHTML(t) {
+    const n = Math.max(t.games, t.history.length + (t.duel ? 1 : 0));
+    let out = '';
+    for (let i = 0; i < n; i++) {
+      const h = t.history[i];
+      if (h) {
+        const d = byId(h.game);
+        const cols = won(h, t) ? h.winners.map((id) => `<i style="--c:${G.COLORS[id].c}"></i>`).join('') : '<em>=</em>';
+        out += `<li class="done${i >= t.games ? ' duel' : ''}"><span class="e">${d.icon}</span><span class="w">${cols}</span></li>`;
+      } else if (i === t.history.length) out += `<li class="now${i >= t.games ? ' duel' : ''}"><span class="e">?</span></li>`;
+      else out += `<li><span class="e">${i + 1}</span></li>`;
+    }
+    return out;
+  }
+  function cardHTML(d, t) {
+    return `<span class="icon">${d.icon}</span><div><p class="eyebrow">${t.duel ? 'Фінальна дуель' : 'Наступна гра'} · ${d.tag}</p><h3>${d.name}</h3><p>${d.desc}</p></div>`;
+  }
+  // рулетка: іконки ігор пробігають і зупиняються на наступній грі
+  let spinTimer = 0;
+  function spin(t) {
+    clearTimeout(spinTimer);
+    const card = $('#next-card'), play = $('#b-play'), skip = $('#b-skip');
+    const finalDef = t.next;
+    const show1 = (d) => {
+      card.style.setProperty('--tile', TILE(d));
+      card.innerHTML = cardHTML(d, t);
+    };
+    if (E.reduced || t.pool.length < 2) {
+      show1(finalDef);
+      return;
+    }
+    play.disabled = skip.disabled = true;
+    card.classList.add('spinning');
+    let i = 0, delay = 55;
+    const steps = 16 + U.randi(0, 5);
+    const tick = () => {
+      if (app.tour !== t) return;
+      if (i >= steps) {
+        show1(finalDef);
+        card.classList.remove('spinning');
+        card.classList.add('landed');
+        setTimeout(() => card.classList.remove('landed'), 450);
+        play.disabled = skip.disabled = false;
+        G.sfx('point');
+        return;
+      }
+      show1(byId(t.pool[(U.randi(0, t.pool.length - 1))]));
+      G.sfx('tap');
+      i++;
+      delay *= 1.12;
+      spinTimer = setTimeout(tick, delay);
+    };
+    tick();
+  }
+  function renderBoard(doSpin) {
     const t = app.tour;
     document.body.classList.remove('playing');
-    $('#board-title').textContent = t.history.length ? `Турнір · гра ${t.history.length + 1}` : 'Турнір';
-    $('#board-target').textContent = `до ${t.target} перемог`;
+    const k = t.history.length + 1;
+    $('#board-title').textContent = t.duel ? 'Фінальна дуель!' : `Гра ${k} / ${t.games}`;
+    $('#board-target').textContent = t.duel ? t.duel.map((id) => G.COLORS[id].name).join(' проти ') : `турнір на ${t.games} ${t.games < 5 ? 'гри' : 'ігор'}`;
+    $('#track').innerHTML = trackHTML(t);
     const last = t.history[t.history.length - 1];
     $('#board-last').textContent = last
-      ? `«${byId(last.game).name}»: ${last.winners.length && last.winners.length < t.ids.length ? last.winners.map((id) => G.COLORS[id].name).join(' і ') + ' +1' : 'нічия, корон ніхто не отримав'}`
-      : 'Усі на старті. Хто перший збере корони?';
+      ? `«${byId(last.game).name}»: ${won(last, t) ? last.winners.map((id) => G.COLORS[id].name).join(' і ') + ' +★' : 'нічия, зірок ніхто не отримав'}`
+      : 'Усі на старті. Крутимо рулетку!';
     $('#standings').innerHTML = standingsHTML(t);
-    const d = t.next;
-    const card = $('#next-card');
-    card.style.setProperty('--tile', TILE(d));
-    card.innerHTML = `<span class="icon">${d.icon}</span><div><p class="eyebrow">Наступна гра · ${d.tag}</p><h3>${d.name}</h3><p>${d.desc}</p></div>`;
     $('#end-confirm').hidden = true;
     show('board');
+    if (doSpin) spin(t);
+    else {
+      const card = $('#next-card');
+      card.style.setProperty('--tile', TILE(t.next));
+      card.innerHTML = cardHTML(t.next, t);
+    }
   }
   $('#b-play').addEventListener('click', () => {
     G.sfx('ui');
     const t = app.tour;
+    const slots = t.duel ? app.slots.map((x, id) => (t.duel.includes(id) ? x : 'off')) : app.slots;
     launch(t.next, (w) => {
-      t.history.push({ game: t.next.id, winners: w.slice() });
-      if (w.length && w.length < t.ids.length) w.forEach((id) => t.scores[id]++);
-      const max = Math.max(...t.ids.map((id) => t.scores[id]));
-      const leaders = t.ids.filter((id) => t.scores[id] === max);
+      t.history.push({ game: t.next.id, winners: w.slice(), players: E.n });
+      if (w.length && w.length < E.n) w.forEach((id) => t.scores[id]++);
       leaveGame();
-      if (max >= t.target && leaders.length === 1) return finalScreen(leaders[0]);
-      if (max >= t.target) toast('Нічия на вершині — тай-брейк!');
+      if (t.history.length >= t.games) {
+        const max = Math.max(...t.ids.map((id) => t.scores[id]));
+        const leaders = t.ids.filter((id) => t.scores[id] === max);
+        if (leaders.length === 1) return finalScreen(leaders[0]);
+        t.duel = leaders;
+        toast('Нічия на вершині — фінальна дуель!');
+      }
       nextFromQueue(t);
-      renderBoard();
-    });
+      renderBoard(true);
+    }, slots);
   });
   $('#b-skip').addEventListener('click', () => {
     G.sfx('ui');
     nextFromQueue(app.tour);
-    renderBoard();
+    spin(app.tour);
   });
   $('#b-end').addEventListener('click', () => ($('#end-confirm').hidden = false));
   $('#end-no').addEventListener('click', () => ($('#end-confirm').hidden = true));
   $('#end-yes').addEventListener('click', () => {
+    clearTimeout(spinTimer);
     app.tour = null;
     show('home');
   });
@@ -419,13 +490,24 @@
     saveStats();
     $('#champ-name').textContent = (t.bots[champ] ? 'Бот ' : '') + c.name;
     $('#trophy').style.setProperty('--champ', c.c);
-    $('#final-standings').innerHTML = standingsHTML(t, champ);
+    // п'єдестал: 2-ге місце ліворуч, 1-ше по центру, 3-тє праворуч, решта — нижче
+    const rk = ranking(t).map((r) => (r.id === champ ? { ...r, place: 1 } : r.place === 1 ? { ...r, place: 2 } : r));
+    const order = [rk.find((r) => r.id === champ), ...rk.filter((r) => r.id !== champ)];
+    const cols = order.length >= 3 ? [order[1], order[0], order[2]] : order.length === 2 ? [order[1], order[0]] : order;
+    const H = { 1: 100, 2: 70, 3: 48 };
+    $('#podium').innerHTML =
+      cols
+        .map((r) => {
+          const cc = G.COLORS[r.id];
+          return `<div class="pod p${r.place}" style="--c:${cc.c}"><span class="crown">${r.place === 1 ? '👑' : ''}</span><span class="ava"></span><span class="nm">${cc.name}</span><span class="st">★ ${t.scores[r.id]}</span><span class="blk" style="--h:${H[r.place] || 36}"><b>${r.place}</b></span></div>`;
+        })
+        .join('') +
+      (order[3] ? `<p class="fourth" style="--c:${G.COLORS[order[3].id].c}">${order[3].place}. ${G.COLORS[order[3].id].name} · ★ ${t.scores[order[3].id]}</p>` : '');
     $('#history').innerHTML = t.history
       .map((h, i) => {
         const d = byId(h.game);
-        const won = h.winners.length && h.winners.length < t.ids.length;
-        const w = won ? h.winners.map((id) => `<i style="--c:${G.COLORS[id].c}" title="${G.COLORS[id].name}"></i>`).join('') : '<em>нічия</em>';
-        return `<li><span class="n">${i + 1}</span><span class="g">${d.icon} ${d.name}</span><span class="w">${w}</span></li>`;
+        const w = won(h, t) ? h.winners.map((id) => `<i style="--c:${G.COLORS[id].c}" title="${G.COLORS[id].name}"></i>`).join('') : '<em>нічия</em>';
+        return `<li><span class="n">${i + 1}</span><span class="g">${d.icon} ${d.name}${i >= t.games ? ' · дуель' : ''}</span><span class="w">${w}</span></li>`;
       })
       .join('');
     G.sfx('fanfare');

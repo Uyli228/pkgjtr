@@ -18,7 +18,7 @@ const URL = process.env.AUDIT_URL || 'http://localhost:8123/index.html';
 const RUNS = +(process.env.AUDIT_RUNS || 3);
 
 const browser = await chromium.launch();
-const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+const page = await browser.newPage({ viewport: { width: 844, height: 390 } });
 const errors = [];
 page.on('pageerror', (e) => errors.push(e.message));
 await page.goto(URL);

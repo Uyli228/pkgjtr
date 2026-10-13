@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Чотири Кути">
-<meta name="description" content="Вечірка на одному телефоні: 25 міні-ігор і турніри для 1–4 гравців.">
+<meta name="description" content="Вечірка на одному телефоні: 32 міні-гри і турніри для 1–4 гравців.">
 <!--pwa-->
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
@@ -29,7 +29,7 @@
       <div class="logo-mark" aria-hidden="true"><b>1</b><b>2</b><b>3</b><b>4</b></div>
       <div>
         <h1>Чотири <span>Кути</span></h1>
-        <p class="tagline">25 міні-ігор на одному телефоні</p>
+        <p class="tagline">32 міні-гри на одному телефоні</p>
       </div>
     </header>
 
@@ -50,8 +50,8 @@
     </div>
 
     <div class="modes">
-      <button class="mode primary" id="btn-games" type="button"><span>Міні-ігри</span><small>25 ігор на вибір</small></button>
-      <button class="mode" id="btn-tourney" type="button"><span>Турнір</span><small>серія ігор до перемоги</small></button>
+      <button class="mode primary" id="btn-games" type="button"><span>Міні-ігри</span><small>32 гри на вибір</small></button>
+      <button class="mode" id="btn-tourney" type="button"><span>Турнір</span><small>рулетка ігор і п’єдестал</small></button>
       <button class="mode" id="btn-random" type="button"><span>Випадкова гра</span><small>одразу в бій</small></button>
     </div>
 
@@ -79,17 +79,17 @@
       <h2>Турнір</h2>
     </header>
     <div class="block">
-      <h3 class="label">Грати до скількох перемог?</h3>
+      <h3 class="label">Скільки ігор у турнірі?</h3>
       <div class="seg" id="seg-target">
         <button type="button" data-v="3">3</button>
         <button type="button" data-v="5">5</button>
         <button type="button" data-v="7">7</button>
         <button type="button" data-v="10">10</button>
       </div>
-      <p class="note">За кожну виграну міні-гру — корона. Хто першим збере потрібну кількість корон, стає чемпіоном.</p>
+      <p class="note">Гру обирає рулетка. За перемогу — зірка. Після останньої гри чемпіон той, у кого найбільше зірок. Нічия — фінальна дуель лише між лідерами.</p>
     </div>
     <div class="block">
-      <h3 class="label">Ігри в турнірі <span class="hint" id="pool-count"></span></h3>
+      <h3 class="label">Ігри на рулетці <span class="hint" id="pool-count"></span></h3>
       <div class="row-btns">
         <button type="button" class="ghost" id="pool-all">Усі</button>
         <button type="button" class="ghost" id="pool-none">Жодної</button>
@@ -107,21 +107,26 @@
       <h2 id="board-title">Турнір</h2>
       <span class="pill" id="board-target"></span>
     </header>
+    <ol class="track" id="track" aria-label="Ігри турніру"></ol>
     <p class="last" id="board-last"></p>
-    <ol class="standings" id="standings"></ol>
-    <div class="next-card" id="next-card"></div>
-    <div class="row-btns">
-      <button class="cta" id="b-play" type="button">Грати</button>
-    </div>
-    <div class="row-btns">
-      <button class="ghost" id="b-skip" type="button">Інша гра</button>
-      <button class="ghost danger" id="b-end" type="button">Завершити турнір</button>
-    </div>
-    <div class="confirm" id="end-confirm" hidden>
-      <p>Завершити турнір без чемпіона?</p>
-      <div class="row-btns">
-        <button class="ghost" id="end-no" type="button">Ні, граємо далі</button>
-        <button class="ghost danger" id="end-yes" type="button">Так, завершити</button>
+    <div class="board-cols">
+      <ol class="standings" id="standings"></ol>
+      <div class="board-side">
+        <div class="next-card" id="next-card"></div>
+        <div class="row-btns">
+          <button class="cta" id="b-play" type="button">Грати</button>
+        </div>
+        <div class="row-btns">
+          <button class="ghost" id="b-skip" type="button">Крутити ще</button>
+          <button class="ghost danger" id="b-end" type="button">Завершити</button>
+        </div>
+        <div class="confirm" id="end-confirm" hidden>
+          <p>Завершити турнір без чемпіона?</p>
+          <div class="row-btns">
+            <button class="ghost" id="end-no" type="button">Ні, граємо далі</button>
+            <button class="ghost danger" id="end-yes" type="button">Так, завершити</button>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -129,11 +134,10 @@
   <!-- Фінал турніру -->
   <section id="final" class="screen" hidden>
     <div class="trophy" id="trophy">
-      <div class="cup" aria-hidden="true">🏆</div>
       <p class="eyebrow">Чемпіон турніру</p>
       <h2 id="champ-name">—</h2>
     </div>
-    <ol class="standings" id="final-standings"></ol>
+    <div class="podium" id="podium"></div>
     <h3 class="label">Історія ігор</h3>
     <ol class="history" id="history"></ol>
     <div class="row-btns">
@@ -242,6 +246,13 @@
 <script src="js/games/41-paws.js"></script>
 <script src="js/games/42-memory.js"></script>
 <script src="js/games/43-pool.js"></script>
+<script src="js/games/48-snowballs.js"></script>
+<script src="js/games/45-snakes.js"></script>
+<script src="js/games/46-tanks.js"></script>
+<script src="js/games/47-paint.js"></script>
+<script src="js/games/50-racing.js"></script>
+<script src="js/games/49-hoops.js"></script>
+<script src="js/games/51-wheelie.js"></script>
 <script src="js/games/44-skillcheck.js"></script>
 <script src="js/games/03-tower.js"></script>
 <script src="js/games/21-lastsec.js"></script>

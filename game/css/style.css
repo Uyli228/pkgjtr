@@ -276,7 +276,7 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
 .last { margin: 0; color: var(--muted); font-weight: 700; min-height: 1.4em; }
 .standings { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
 .standings li {
-  display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; align-items: center; gap: 12px;
+  display: grid; grid-template-columns: 34px minmax(0, 1fr) auto auto; align-items: center; gap: 12px;
   padding: 10px 12px; border-radius: 14px; background: var(--ink-2);
   border-left: 6px solid var(--c);
 }
@@ -314,6 +314,52 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
 .history .w { display: flex; gap: 4px; }
 .history .w i { width: 14px; height: 14px; border-radius: 50%; background: var(--c); }
 .history .w em { font-style: normal; color: var(--muted); font-size: 12.5px; }
+
+/* табло: доріжка ігор, рулетка, п'єдестал */
+.track { list-style: none; margin: 0; padding: 0; display: flex; gap: 6px; flex-wrap: wrap; }
+.track li {
+  flex: 1 1 0; min-width: 34px; max-width: 64px; height: 44px; border-radius: 12px;
+  background: var(--ink-2); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  border: 2px solid transparent;
+}
+.track .e { font: 800 13px var(--font-d); color: var(--muted); line-height: 1; }
+.track li.done .e { font-size: 18px; }
+.track li.now { border-color: var(--paper); background: var(--ink-3); }
+.track li.now .e { color: var(--paper); font-size: 18px; }
+.track li.duel { border-color: #FFC530; }
+.track .w { display: flex; gap: 2px; }
+.track .w i { width: 8px; height: 8px; border-radius: 50%; background: var(--c); }
+.track .w em { font: 800 10px var(--font-d); font-style: normal; color: var(--muted); }
+.board-cols { display: flex; flex-direction: column; gap: 12px; }
+.board-side { display: flex; flex-direction: column; gap: 10px; }
+.standings .stars { color: var(--c); font-size: 14px; letter-spacing: -1px; max-width: 120px; overflow: hidden; white-space: nowrap; text-overflow: clip; }
+.standings li.dim { opacity: 0.4; }
+.next-card.spinning .icon { animation: reel 0.12s linear infinite; }
+.next-card.spinning h3, .next-card.spinning p { opacity: 0.6; }
+.next-card.landed { animation: land 0.45s ease-out; }
+@keyframes reel { 0% { transform: translateY(-6px); } 100% { transform: translateY(6px); } }
+@keyframes land { 0% { transform: scale(1.06); } 100% { transform: scale(1); } }
+.podium { display: flex; align-items: flex-end; justify-content: center; gap: 10px; flex-wrap: wrap; padding-top: 8px; }
+.pod { display: flex; flex-direction: column; align-items: center; gap: 4px; width: min(30%, 150px); }
+.pod .crown { font-size: 30px; height: 34px; animation: bob 2.4s ease-in-out infinite; }
+.pod .ava { width: 46px; height: 46px; border-radius: 50%; background: var(--c); display: grid; place-items: center; font: 900 18px var(--font-d); color: var(--ink); box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.25); }
+.pod.p1 .ava { width: 60px; height: 60px; font-size: 22px; }
+.pod .nm { font: 800 14px var(--font-d); }
+.pod .st { font: 800 13px var(--font-d); color: var(--c); }
+.pod .blk {
+  width: 100%; height: calc(var(--h) * 1px); border-radius: 12px 12px 0 0;
+  background: linear-gradient(var(--c), color-mix(in srgb, var(--c) 55%, #120E26));
+  display: grid; place-items: start center; padding-top: 6px;
+}
+.pod .blk b { font: 900 26px var(--font-d); color: rgba(18, 14, 38, 0.75); }
+.fourth { flex-basis: 100%; text-align: center; margin: 4px 0 0; font: 800 14px var(--font-d); color: var(--muted); }
+.trophy { padding: 8px 0 0; }
+@media (orientation: landscape) and (max-height: 560px) {
+  .board-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; align-items: start; }
+  .track li { height: 38px; }
+  .pod .blk { height: calc(var(--h) * 0.7px); }
+  .pod .crown { font-size: 24px; height: 26px; }
+}
 
 /* ----- налаштування / статистика ----- */
 .list { gap: 0; background: var(--ink-2); border-radius: var(--r); padding: 4px 14px; }
@@ -367,6 +413,6 @@ kbd { font: 800 12px var(--font-d); background: var(--ink-3); border-radius: 6px
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .trophy .cup { animation: none; }
+  .trophy .cup, .pod .crown, .next-card.spinning .icon, .next-card.landed { animation: none; }
   .count, .mode, .card, .cta { transition: none; }
 }

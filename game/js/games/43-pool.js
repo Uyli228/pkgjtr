@@ -9,7 +9,12 @@
       const TIME = 45;
       const S = {};
       let balls = [], pockets = [];
-      const R = () => 3.2 * E.arena.u;
+      // масштаб від площі столу: однаково грається і на широкому, і на вузькому екрані
+      const K = () => {
+        const t = table();
+        return Math.sqrt(t.w * t.h) / 100;
+      };
+      const R = () => 2.9 * K();
       function table() {
         const ar = E.arena, m = 5 * ar.u;
         return { x: ar.x + m, y: ar.y + m, w: ar.w - 2 * m, h: ar.h - 2 * m };
@@ -46,7 +51,7 @@
               if (b.gone) continue;
               const v = Math.hypot(b.vx, b.vy);
               if (v > 0) {
-                const nv = Math.max(0, v - 22 * u * h);
+                const nv = Math.max(0, v - 22 * K() * h);
                 b.vx *= nv / v;
                 b.vy *= nv / v;
               }
@@ -106,6 +111,8 @@
           if (left === 0 || E.playT > TIME) {
             const v = {};
             E.players.forEach((p) => (v[p.id] = S[p.id].sc));
+            // нічия на час — грають до наступної забитої кулі (ще до 20 с)
+            if (left > 0 && E.best(v, 'max').length > 1 && E.playT < TIME + 20) return;
             E.finish(E.best(v, 'max'), 'Забито: ' + Math.max(...Object.values(v)));
           }
         },
@@ -114,8 +121,8 @@
           const l = Math.hypot(x, y);
           if (l < 0.2 || s.cd > 0) return;
           // удар у протилежний бік від відтягування
-          b.vx = (-x / l) * l * 95 * u;
-          b.vy = (-y / l) * l * 95 * u;
+          b.vx = (-x / l) * l * 105 * K();
+          b.vy = (-y / l) * l * 105 * K();
           s.cd = 0.8;
           G.sfx('hit');
         },
@@ -133,7 +140,7 @@
           }
           if (!best) return;
           const a = Math.atan2(best.y - b.y, best.x - b.x) + U.gauss() * U.lerp(0.25, 0.06, E.skill);
-          const pw = U.clamp(0.45 + bd / (120 * E.arena.u), 0.4, 1);
+          const pw = U.clamp(0.45 + bd / (120 * K()), 0.4, 1);
           this.shoot(p, -Math.cos(a) * pw, -Math.sin(a) * pw);
         },
         release(p) {
